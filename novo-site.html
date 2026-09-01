@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Novo Site - Meu Painel</title>
+
+    <link
+        rel="stylesheet"
+        href="./style.css"
+    >
+
+</head>
+
+
+<body class="painel-body">
+
+
+    <!-- ==========================================
+         MENU LATERAL
+    ========================================== -->
+
+    <aside class="menu">
+
+
+        <div class="logo">
+
+            <h2>
+                MEU PAINEL
+            </h2>
+
+            <span>
+                Gestão de Sites
+            </span>
+
+        </div>
+
+
+        <nav>
+
+
+            <button onclick="mostrarInicio()">
+                🏠 Início
+            </button>
+
+
+            <button onclick="mostrarSitesMenu()">
+                🌐 Meus Sites
+            </button>
+
+
+            <button onclick="abrirClientes()">
+                👥 Clientes
+            </button>
+
+
+            <button>
+                💰 Financeiro
+            </button>
+
+
+            <button>
+                ⚙️ Configurações
+            </button>
+
+
+        </nav>
+
+
+        <div class="menu-final">
+
+            <button
+                class="botao-sair"
+                onclick="sair()"
+            >
+                🚪 Sair
+            </button>
+
+        </div>
+
+
+    </aside>
+
+
+
+    <!-- ==========================================
+         CONTEÚDO
+    ========================================== -->
+
+    <section class="conteudo">
+
+
+        <!-- CABEÇALHO -->
+
+        <header class="topo">
+
+
+            <div>
+
+                <h1>
+                    Novo Site
+                </h1>
+
+
+                <p>
+                    Cadastre um novo site de cliente.
+                </p>
+
+            </div>
+
+
+            <button
+                class="botao-novo"
+                onclick="voltar()"
+            >
+                ← VOLTAR
+            </button>
+
+
+        </header>
+
+
+
+        <!-- ======================================
+             FORMULÁRIO
+        ====================================== -->
+
+        <div class="formulario">
+
+
+            <h1>
+                Dados do Site
+            </h1>
+
+
+            <p>
+                Preencha as informações abaixo.
+            </p>
+
+
+
+            <!-- ==================================
+                 CLIENTE
+            ================================== -->
+
+            <label>
+                Cliente *
+            </label>
+
+
+            <select
+                id="clienteDoSite"
+            >
+
+                <option value="">
+                    Selecione o cliente
+                </option>
+
+            </select>
+
+
+
+            <!-- ==================================
+                 NOME DO SITE
+            ================================== -->
+
+            <label>
+                Nome do site *
+            </label>
+
+
+            <input
+                type="text"
+                id="nomeSite"
+                placeholder="Ex: Site Mercado do João"
+            >
+
+
+
+            <!-- ==================================
+                 ENDEREÇO DO SITE
+            ================================== -->
+
+            <label>
+                Endereço do site *
+            </label>
+
+
+            <input
+                type="text"
+                id="url"
+                placeholder="https://www.exemplo.com.br"
+            >
+
+
+
+            <!-- ==================================
+                 CATEGORIA
+            ================================== -->
+
+            <label>
+                Categoria
+            </label>
+
+
+            <select id="categoria">
+
+
+                <option value="Comércio">
+                    Comércio
+                </option>
+
+
+                <option value="Restaurante">
+                    Restaurante
+                </option>
+
+
+                <option value="Serviços">
+                    Serviços
+                </option>
+
+
+                <option value="Empresa">
+                    Empresa
+                </option>
+
+
+                <option value="Profissional">
+                    Profissional
+                </option>
+
+
+            </select>
+
+
+
+            <!-- ==================================
+                 STATUS
+            ================================== -->
+
+            <label>
+                Status
+            </label>
+
+
+            <select id="status">
+
+
+                <option value="🟢 ONLINE">
+                    🟢 ONLINE
+                </option>
+
+
+                <option value="🟡 MANUTENÇÃO">
+                    🟡 MANUTENÇÃO
+                </option>
+
+
+                <option value="🔴 OFFLINE">
+                    🔴 OFFLINE
+                </option>
+
+
+            </select>
+
+
+
+            <!-- ==================================
+                 OBSERVAÇÕES
+            ================================== -->
+
+            <label>
+                Observações
+            </label>
+
+
+            <textarea
+                id="observacoes"
+                placeholder="Informações sobre o site..."
+            ></textarea>
+
+
+
+            <!-- ==================================
+                 BOTÃO
+            ================================== -->
+
+            <button
+                onclick="salvarOuAtualizar()"
+            >
+                SALVAR SITE
+            </button>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- JAVASCRIPT -->
+
+    <script src="./script.js"></script>
+
+
+</body>
+
+</html>

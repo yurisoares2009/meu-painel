@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Meu Painel</title>
+
+    <link
+        rel="stylesheet"
+        href="./style.css"
+    >
+
+</head>
+
+
+<body class="painel-body">
+
+
+    <!-- MENU LATERAL -->
+
+    <aside class="menu">
+
+        <div class="logo">
+
+            <h2>MEU PAINEL</h2>
+
+            <span>Gestão de Sites</span>
+
+        </div>
+
+
+        <nav>
+
+            <button
+                onclick="mostrarInicio()"
+            >
+                🏠 Início
+            </button>
+
+
+            <button
+                onclick="mostrarSitesMenu()"
+            >
+                🌐 Meus Sites
+            </button>
+
+
+            <button
+                onclick="abrirClientes()"
+            >
+                👥 Clientes
+            </button>
+
+
+            <button
+                onclick="abrirFinanceiro()"
+            >
+                💰 Financeiro
+            </button>
+
+
+            <button>
+                ⚙️ Configurações
+            </button>
+
+        </nav>
+
+
+        <div class="menu-final">
+
+            <button
+                class="botao-sair"
+                onclick="sair()"
+            >
+                🚪 Sair
+            </button>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- CONTEÚDO -->
+
+    <section class="conteudo">
+
+
+        <!-- TOPO -->
+
+        <header class="topo">
+
+            <div>
+
+                <h1>
+                    Dashboard
+                </h1>
+
+                <p>
+                    Bem-vindo ao seu painel de controle.
+                </p>
+
+            </div>
+
+
+            <button
+                class="botao-novo"
+                onclick="novoSite()"
+            >
+                + NOVO SITE
+            </button>
+
+        </header>
+
+
+
+        <!-- CARTÕES -->
+
+        <div class="cartoes">
+
+
+            <!-- TOTAL DE SITES -->
+
+            <div class="cartao">
+
+                <span class="icone">
+                    🌐
+                </span>
+
+                <div>
+
+                    <p>
+                        TOTAL DE SITES
+                    </p>
+
+                    <h2 id="contadorSites">
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- SITES ONLINE -->
+
+            <div class="cartao">
+
+                <span class="icone">
+                    🟢
+                </span>
+
+                <div>
+
+                    <p>
+                        SITES ONLINE
+                    </p>
+
+                    <h2 id="contadorOnline">
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- MANUTENÇÃO -->
+
+            <div class="cartao">
+
+                <span class="icone">
+                    🟡
+                </span>
+
+                <div>
+
+                    <p>
+                        MANUTENÇÃO
+                    </p>
+
+                    <h2 id="contadorManutencao">
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- OFFLINE -->
+
+            <div class="cartao">
+
+                <span class="icone">
+                    🔴
+                </span>
+
+                <div>
+
+                    <p>
+                        SITES OFFLINE
+                    </p>
+
+                    <h2 id="contadorOffline">
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- TÍTULO DOS SITES -->
+
+        <div class="titulo-sites">
+
+            <div>
+
+                <h2>
+                    Meus Sites
+                </h2>
+
+                <p>
+                    Sites cadastrados no sistema.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- LISTA DE SITES -->
+
+        <div
+            class="sites"
+            id="listaSites"
+        ></div>
+
+
+    </section>
+
+
+
+    <!-- JAVASCRIPT -->
+
+    <script src="./script.js"></script>
+
+
+</body>
+
+</html>

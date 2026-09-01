@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Clientes - Meu Painel</title>
+
+    <!-- CSS -->
+    <link
+        rel="stylesheet"
+        href="./style.css"
+    >
+
+</head>
+
+
+<body class="painel-body">
+
+
+    <!-- ==========================================
+         MENU LATERAL
+    ========================================== -->
+
+    <aside class="menu">
+
+
+        <!-- LOGO -->
+
+        <div class="logo">
+
+            <h2>
+                MEU PAINEL
+            </h2>
+
+            <span>
+                Gestão de Sites
+            </span>
+
+        </div>
+
+
+        <!-- MENU -->
+
+        <nav>
+
+
+            <button
+                onclick="mostrarInicio()"
+            >
+                🏠 Início
+            </button>
+
+
+            <button
+                onclick="mostrarSitesMenu()"
+            >
+                🌐 Meus Sites
+            </button>
+
+
+            <button
+                onclick="abrirClientes()"
+            >
+                👥 Clientes
+            </button>
+
+
+            <button>
+                💰 Financeiro
+            </button>
+
+
+            <button>
+                ⚙️ Configurações
+            </button>
+
+
+        </nav>
+
+
+        <!-- SAIR -->
+
+        <div class="menu-final">
+
+
+            <button
+                class="botao-sair"
+                onclick="sair()"
+            >
+                🚪 Sair
+            </button>
+
+
+        </div>
+
+
+    </aside>
+
+
+
+    <!-- ==========================================
+         CONTEÚDO PRINCIPAL
+    ========================================== -->
+
+    <section class="conteudo">
+
+
+        <!-- ======================================
+             CABEÇALHO
+        ====================================== -->
+
+        <header class="topo">
+
+
+            <div>
+
+                <h1>
+                    Clientes
+                </h1>
+
+
+                <p>
+                    Gerencie todos os seus clientes.
+                </p>
+
+            </div>
+
+
+            <button
+                class="botao-novo"
+                onclick="novoCliente()"
+            >
+                + NOVO CLIENTE
+            </button>
+
+
+        </header>
+
+
+
+        <!-- ======================================
+             TÍTULO
+        ====================================== -->
+
+        <div class="titulo-sites">
+
+
+            <h2>
+                👥 Meus Clientes
+            </h2>
+
+
+            <p>
+                Empresas cadastradas no sistema.
+            </p>
+
+
+        </div>
+
+
+
+        <!-- ======================================
+             ÁREA DE PESQUISA
+        ====================================== -->
+
+        <div
+            class="formulario"
+            style="
+                max-width: 100%;
+                margin: 0 0 25px 0;
+                padding: 20px;
+            "
+        >
+
+
+            <label>
+                🔎 Pesquisar cliente
+            </label>
+
+
+            <input
+                type="text"
+                id="pesquisaCliente"
+                placeholder="Digite o nome da empresa, responsável, telefone ou e-mail..."
+                oninput="pesquisarClientes()"
+            >
+
+
+        </div>
+
+
+
+        <!-- ======================================
+             LISTA DE CLIENTES
+        ====================================== -->
+
+        <div
+            class="sites"
+            id="listaClientes"
+        >
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- JAVASCRIPT -->
+
+    <script src="./script.js"></script>
+
+
+</body>
+
+</html>

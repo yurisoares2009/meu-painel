@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Financeiro - Meu Painel</title>
+
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body class="painel-body">
+
+    <aside class="menu">
+
+        <div class="logo">
+
+            <h2>MEU PAINEL</h2>
+
+            <span>Gestão de Sites</span>
+
+        </div>
+
+        <nav>
+
+            <button onclick="mostrarInicio()">
+                🏠 Início
+            </button>
+
+            <button onclick="mostrarSitesMenu()">
+                🌐 Meus Sites
+            </button>
+
+            <button onclick="abrirClientes()">
+                👥 Clientes
+            </button>
+
+            <button onclick="abrirFinanceiro()">
+                💰 Financeiro
+            </button>
+
+            <button>
+                ⚙️ Configurações
+            </button>
+
+        </nav>
+
+        <div class="menu-final">
+
+            <button
+                class="botao-sair"
+                onclick="sair()"
+            >
+                🚪 Sair
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <section class="conteudo">
+
+        <header class="topo">
+
+            <div>
+
+                <h1>Financeiro</h1>
+
+                <p>
+                    Controle os pagamentos dos seus clientes.
+                </p>
+
+            </div>
+
+            <button
+                class="botao-novo"
+                onclick="novoPagamento()"
+            >
+                + NOVO PAGAMENTO
+            </button>
+
+        </header>
+
+
+        <div class="cartoes">
+
+            <div class="cartao">
+
+                <span class="icone">
+                    💰
+                </span>
+
+                <div>
+
+                    <p>
+                        TOTAL A RECEBER
+                    </p>
+
+                    <h2 id="totalReceber">
+                        R$ 0,00
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="cartao">
+
+                <span class="icone">
+                    🟢
+                </span>
+
+                <div>
+
+                    <p>
+                        RECEBIDO
+                    </p>
+
+                    <h2 id="totalRecebido">
+                        R$ 0,00
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="cartao">
+
+                <span class="icone">
+                    🟡
+                </span>
+
+                <div>
+
+                    <p>
+                        PENDENTE
+                    </p>
+
+                    <h2 id="totalPendente">
+                        R$ 0,00
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="cartao">
+
+                <span class="icone">
+                    🔴
+                </span>
+
+                <div>
+
+                    <p>
+                        ATRASADO
+                    </p>
+
+                    <h2 id="totalAtrasado">
+                        R$ 0,00
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="titulo-sites">
+
+            <h2>
+                💰 Pagamentos
+            </h2>
+
+            <p>
+                Controle mensal dos pagamentos dos clientes.
+            </p>
+
+        </div>
+
+
+        <div
+            class="sites"
+            id="listaFinanceiro"
+        ></div>
+
+    </section>
+
+
+    <script src="./script.js"></script>
+
+</body>
+</html>

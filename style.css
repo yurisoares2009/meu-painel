@@ -1,0 +1,609 @@
+/* ==========================================
+   CONFIGURAÇÃO GERAL
+========================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* ==========================================
+   LOGIN
+========================================== */
+
+.login-container {
+    min-height: 100vh;
+    background: #111827;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-box {
+    width: 380px;
+    background: #ffffff;
+
+    padding: 40px;
+
+    border-radius: 15px;
+
+    text-align: center;
+
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.login-box h1 {
+    color: #111827;
+    margin-bottom: 10px;
+}
+
+.login-box p {
+    color: #6b7280;
+    margin-bottom: 25px;
+}
+
+.login-box input {
+    width: 100%;
+    padding: 14px;
+
+    margin-bottom: 15px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    font-size: 15px;
+}
+
+.login-box button {
+    width: 100%;
+    padding: 14px;
+
+    background: #2563eb;
+    color: #ffffff;
+
+    border: none;
+    border-radius: 8px;
+
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.login-box button:hover {
+    background: #1d4ed8;
+}
+
+#erro {
+    color: #dc2626;
+    margin-top: 15px;
+}
+
+
+/* ==========================================
+   PAINEL
+========================================== */
+
+.painel-body {
+    min-height: 100vh;
+
+    background: #f3f4f6;
+    color: #111827;
+
+    display: flex;
+}
+
+
+/* ==========================================
+   MENU LATERAL
+========================================== */
+
+.menu {
+    width: 250px;
+    min-height: 100vh;
+
+    background: #111827;
+    color: #ffffff;
+
+    padding: 25px 15px;
+
+    display: flex;
+    flex-direction: column;
+
+    position: fixed;
+
+    left: 0;
+    top: 0;
+    bottom: 0;
+}
+
+
+/* ==========================================
+   LOGO
+========================================== */
+
+.logo {
+    padding: 10px 15px 30px;
+
+    border-bottom: 1px solid #374151;
+}
+
+.logo h2 {
+    font-size: 20px;
+}
+
+.logo span {
+    display: block;
+
+    margin-top: 5px;
+
+    color: #9ca3af;
+
+    font-size: 13px;
+}
+
+
+/* ==========================================
+   MENU
+========================================== */
+
+.menu nav {
+    margin-top: 25px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.menu nav button,
+.menu-final button {
+    width: 100%;
+
+    padding: 13px 15px;
+
+    background: transparent;
+
+    color: #d1d5db;
+
+    border: none;
+
+    border-radius: 8px;
+
+    text-align: left;
+
+    font-size: 15px;
+
+    cursor: pointer;
+}
+
+.menu nav button:hover {
+    background: #1f2937;
+    color: #ffffff;
+}
+
+
+/* ==========================================
+   BOTÃO SAIR
+========================================== */
+
+.menu-final {
+    margin-top: auto;
+}
+
+.botao-sair {
+    background: #991b1b !important;
+    color: #ffffff !important;
+}
+
+.botao-sair:hover {
+    background: #b91c1c !important;
+}
+
+
+/* ==========================================
+   CONTEÚDO
+========================================== */
+
+.conteudo {
+    width: calc(100% - 250px);
+
+    margin-left: 250px;
+
+    padding: 35px;
+}
+
+
+/* ==========================================
+   TOPO
+========================================== */
+
+.topo {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 30px;
+}
+
+.topo h1 {
+    font-size: 30px;
+
+    margin-bottom: 7px;
+}
+
+.topo p {
+    color: #6b7280;
+}
+
+
+/* ==========================================
+   BOTÃO NOVO
+========================================== */
+
+.botao-novo {
+    width: auto;
+
+    padding: 13px 20px;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    border: none;
+
+    border-radius: 8px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.botao-novo:hover {
+    background: #1d4ed8;
+}
+
+
+/* ==========================================
+   CARTÕES
+========================================== */
+
+.cartoes {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 20px;
+
+    margin-bottom: 35px;
+}
+
+.cartao {
+    background: #ffffff;
+
+    padding: 22px;
+
+    border-radius: 12px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.icone {
+    width: 50px;
+    height: 50px;
+
+    background: #f3f4f6;
+
+    border-radius: 10px;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    font-size: 23px;
+}
+
+.cartao p {
+    color: #6b7280;
+
+    font-size: 11px;
+
+    font-weight: bold;
+
+    margin-bottom: 5px;
+}
+
+.cartao h2 {
+    font-size: 28px;
+}
+
+
+/* ==========================================
+   TÍTULOS
+========================================== */
+
+.titulo-sites {
+    margin-bottom: 20px;
+}
+
+.titulo-sites h2 {
+    font-size: 22px;
+
+    margin-bottom: 5px;
+}
+
+.titulo-sites p {
+    color: #6b7280;
+}
+
+
+/* ==========================================
+   LISTA DE SITES
+========================================== */
+
+.sites {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 20px;
+}
+
+
+/* ==========================================
+   CARTÃO DO SITE
+========================================== */
+
+.site {
+    background: #ffffff;
+
+    padding: 25px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+
+    transition: 0.2s;
+}
+
+.site:hover {
+    transform: translateY(-3px);
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.site h2 {
+    color: #111827;
+
+    margin-bottom: 12px;
+
+    font-size: 20px;
+}
+
+.site p {
+    color: #6b7280;
+
+    margin-bottom: 10px;
+
+    line-height: 1.5;
+}
+
+.site strong {
+    color: #111827;
+}
+
+
+/* ==========================================
+   AÇÕES
+========================================== */
+
+.acoes {
+    margin-top: 20px;
+
+    display: flex;
+
+    gap: 8px;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+}
+
+.site a {
+    display: inline-block;
+
+    padding: 10px 14px;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    border-radius: 7px;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    font-weight: bold;
+}
+
+.site a:hover {
+    background: #1d4ed8;
+}
+
+.site button {
+    width: auto;
+
+    padding: 10px 14px;
+
+    background: #e5e7eb;
+
+    color: #111827;
+
+    border: none;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    font-size: 13px;
+}
+
+.site button:hover {
+    background: #d1d5db;
+}
+
+
+/* ==========================================
+   FORMULÁRIO
+========================================== */
+
+.formulario {
+    max-width: 700px;
+
+    margin: 20px auto;
+
+    background: #ffffff;
+
+    padding: 35px;
+
+    border-radius: 15px;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+
+    text-align: left;
+}
+
+.formulario h1 {
+    margin-bottom: 8px;
+}
+
+.formulario p {
+    color: #6b7280;
+
+    margin-bottom: 25px;
+}
+
+.formulario label {
+    display: block;
+
+    margin-top: 18px;
+
+    margin-bottom: 7px;
+
+    font-weight: bold;
+
+    color: #374151;
+}
+
+.formulario input,
+.formulario select,
+.formulario textarea {
+    width: 100%;
+
+    padding: 13px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.formulario textarea {
+    min-height: 120px;
+
+    resize: vertical;
+}
+
+.formulario button {
+    width: 100%;
+
+    margin-top: 25px;
+
+    padding: 14px;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    border: none;
+
+    border-radius: 8px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.formulario button:hover {
+    background: #1d4ed8;
+}
+
+
+/* ==========================================
+   RESPONSIVO
+========================================== */
+
+@media (max-width: 1000px) {
+
+    .cartoes {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .sites {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .menu {
+        width: 200px;
+    }
+
+    .conteudo {
+        width: calc(100% - 200px);
+
+        margin-left: 200px;
+
+        padding: 20px;
+    }
+
+    .topo {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 20px;
+    }
+
+    .cartoes {
+        grid-template-columns: 1fr;
+    }
+
+    .sites {
+        grid-template-columns: 1fr;
+    }
+
+}

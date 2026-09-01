@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Cliente - Meu Painel</title>
+
+    <link
+        rel="stylesheet"
+        href="./style.css"
+    >
+
+</head>
+
+
+<body class="painel-body">
+
+
+    <!-- MENU LATERAL -->
+
+    <aside class="menu">
+
+        <div class="logo">
+
+            <h2>MEU PAINEL</h2>
+
+            <span>Gestão de Sites</span>
+
+        </div>
+
+
+        <nav>
+
+            <button onclick="mostrarInicio()">
+                🏠 Início
+            </button>
+
+            <button onclick="mostrarSitesMenu()">
+                🌐 Meus Sites
+            </button>
+
+            <button onclick="abrirClientes()">
+                👥 Clientes
+            </button>
+
+            <button onclick="abrirFinanceiro()">
+                💰 Financeiro
+            </button>
+
+            <button>
+                ⚙️ Configurações
+            </button>
+
+        </nav>
+
+
+        <div class="menu-final">
+
+            <button
+                class="botao-sair"
+                onclick="sair()"
+            >
+                🚪 Sair
+            </button>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- CONTEÚDO -->
+
+    <section class="conteudo">
+
+
+        <!-- TOPO -->
+
+        <header class="topo">
+
+            <div>
+
+                <h1>
+                    Detalhes do Cliente
+                </h1>
+
+                <p>
+                    Informações, sites e financeiro desta empresa.
+                </p>
+
+            </div>
+
+
+            <button
+                class="botao-novo"
+                onclick="abrirClientes()"
+            >
+                ← VOLTAR
+            </button>
+
+        </header>
+
+
+
+        <!-- DADOS DO CLIENTE -->
+
+        <div
+            class="formulario"
+            id="dadosCliente"
+        ></div>
+
+
+
+        <!-- SITES -->
+
+        <div class="titulo-sites">
+
+            <h2>
+                🌐 Sites do Cliente
+            </h2>
+
+            <p>
+                Sites cadastrados para esta empresa.
+            </p>
+
+        </div>
+
+
+        <div
+            class="sites"
+            id="sitesDoCliente"
+        ></div>
+
+
+
+        <!-- FINANCEIRO -->
+
+        <div
+            class="titulo-sites"
+            style="margin-top: 40px;"
+        >
+
+            <h2>
+                💰 Financeiro do Cliente
+            </h2>
+
+            <p>
+                Pagamentos cadastrados para esta empresa.
+            </p>
+
+        </div>
+
+
+        <!-- RESUMO FINANCEIRO -->
+
+        <div class="cartoes">
+
+
+            <div class="cartao">
+
+                <span class="icone">
+                    💰
+                </span>
+
+                <div>
+
+                    <p>
+                        TOTAL
+                    </p>
+
+                    <h2 id="clienteTotalFinanceiro">
+                        R$ 0,00
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="cartao">
+
+                <span class="icone">
+                    🟢
+                </span>
+
+                <div>
+
+                    <p>
+                        PAGO
+                    </p>
+
+                    <h2 id="clienteTotalPago">
+                        R$ 0,00
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="cartao">
+
+                <span class="icone">
+                    🟡
+                </span>
+
+                <div>
+
+                    <p>
+                        PENDENTE
+                    </p>
+
+                    <h2 id="clienteTotalPendente">
+                        R$ 0,00
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="cartao">
+
+                <span class="icone">
+                    🔴
+                </span>
+
+                <div>
+
+                    <p>
+                        ATRASADO
+                    </p>
+
+                    <h2 id="clienteTotalAtrasado">
+                        R$ 0,00
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- PAGAMENTOS DO CLIENTE -->
+
+        <div
+            class="sites"
+            id="financeiroDoCliente"
+        ></div>
+
+
+    </section>
+
+
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>
