@@ -9,14 +9,18 @@ const SUPABASE_URL =
 const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_RSJio7lPm_vl8kRxdfNjoA_goL05CQ4";
 
-// Cria a conexão e deixa disponível para todo o sistema
-window.supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-);
+// Cria o cliente Supabase
+const clienteSupabase =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
 
-console.log("==========================================");
+// Disponibiliza para todo o sistema
+window.supabaseClient = clienteSupabase;
+
+// Também deixamos disponível como "supabase"
+window.meuSupabase = clienteSupabase;
+
 console.log("SUPABASE CONECTADO!");
-console.log("URL:", SUPABASE_URL);
-console.log("Cliente Supabase:", window.supabaseClient);
-console.log("==========================================");
+console.log("Supabase disponível:", !!window.supabaseClient);
