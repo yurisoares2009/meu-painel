@@ -1,0 +1,291 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Novo Cliente - Meu Painel</title>
+
+    <link
+        rel="stylesheet"
+        href="./style.css"
+    >
+
+</head>
+
+
+<body class="painel-body">
+
+
+    <!-- ==========================================
+         MENU LATERAL
+    ========================================== -->
+
+    <aside class="menu">
+
+
+        <div class="logo">
+
+            <h2>
+                MEU PAINEL
+            </h2>
+
+            <span>
+                Gestão de Sites
+            </span>
+
+        </div>
+
+
+        <nav>
+
+
+            <button onclick="mostrarInicio()">
+                🏠 Início
+            </button>
+
+
+            <button onclick="mostrarSitesMenu()">
+                🌐 Meus Sites
+            </button>
+
+
+            <button onclick="abrirClientes()">
+                👥 Clientes
+            </button>
+
+
+            <button onclick="abrirFinanceiro()">
+                💰 Financeiro
+            </button>
+
+
+            <button>
+                ⚙️ Configurações
+            </button>
+
+
+        </nav>
+
+
+        <div class="menu-final">
+
+
+            <button
+                class="botao-sair"
+                onclick="sair()"
+            >
+                🚪 Sair
+            </button>
+
+
+        </div>
+
+
+    </aside>
+
+
+
+    <!-- ==========================================
+         CONTEÚDO
+    ========================================== -->
+
+    <section class="conteudo">
+
+
+        <!-- CABEÇALHO -->
+
+        <header class="topo">
+
+
+            <div>
+
+                <h1>
+                    Novo Cliente
+                </h1>
+
+
+                <p>
+                    Cadastre uma nova empresa no sistema.
+                </p>
+
+            </div>
+
+
+            <button
+                class="botao-novo"
+                onclick="abrirClientes()"
+            >
+                ← VOLTAR
+            </button>
+
+
+        </header>
+
+
+
+        <!-- ======================================
+             FORMULÁRIO
+        ====================================== -->
+
+        <div class="formulario">
+
+
+            <h1>
+                Dados do Cliente
+            </h1>
+
+
+            <p>
+                Preencha as informações da empresa.
+            </p>
+
+
+
+            <!-- EMPRESA -->
+
+            <label>
+                Nome da empresa *
+            </label>
+
+
+            <input
+                type="text"
+                id="clienteEmpresa"
+                placeholder="Ex: Mercado do João"
+            >
+
+
+
+            <!-- RESPONSÁVEL -->
+
+            <label>
+                Nome do responsável *
+            </label>
+
+
+            <input
+                type="text"
+                id="clienteResponsavel"
+                placeholder="Ex: João da Silva"
+            >
+
+
+
+            <!-- TELEFONE -->
+
+            <label>
+                Telefone
+            </label>
+
+
+            <input
+                type="text"
+                id="clienteTelefone"
+                placeholder="Ex: (51) 99999-9999"
+            >
+
+
+
+            <!-- WHATSAPP -->
+
+            <label>
+                WhatsApp
+            </label>
+
+
+            <input
+                type="text"
+                id="clienteWhatsapp"
+                placeholder="Ex: (51) 99999-9999"
+            >
+
+
+
+            <!-- E-MAIL -->
+
+            <label>
+                E-mail
+            </label>
+
+
+            <input
+                type="email"
+                id="clienteEmail"
+                placeholder="Ex: contato@empresa.com.br"
+            >
+
+
+
+            <!-- ENDEREÇO -->
+
+            <label>
+                Endereço
+            </label>
+
+
+            <input
+                type="text"
+                id="clienteEndereco"
+                placeholder="Ex: Rua Principal, 100"
+            >
+
+
+
+            <!-- OBSERVAÇÕES -->
+
+            <label>
+                Observações
+            </label>
+
+
+            <textarea
+                id="clienteObservacoes"
+                placeholder="Digite aqui informações importantes sobre o cliente..."
+            ></textarea>
+
+
+
+            <!-- BOTÃO -->
+
+            <button
+                onclick="salvarCliente()"
+            >
+                SALVAR CLIENTE
+            </button>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ===================================== -->
+    <!-- SUPABASE -->
+    <!-- ===================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="./supabase-config.js"></script>
+
+
+    <!-- ===================================== -->
+    <!-- SISTEMA -->
+    <!-- ===================================== -->
+
+    <script src="./script.js"></script>
+
+
+</body>
+
+</html>
+```
