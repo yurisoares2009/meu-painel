@@ -1,37 +1,144 @@
 // ==========================================
-// MEU PAINEL - JAVASCRIPT COMPLETO
+// MEU PAINEL
+// SISTEMA COMPLETO
+// LOGIN SUPABASE + CLIENTES + SITES + FINANCEIRO
 // ==========================================
+
+
+// ==========================================
+// VERIFICAR SUPABASE
+// ==========================================
+
+function bancoDisponivel() {
+    return (
+        typeof window.supabaseClient !== "undefined" &&
+        window.supabaseClient !== null
+    );
+}
 
 
 // ==========================================
 // LOGIN
 // ==========================================
 
-function entrar() {
-
+async function entrar() {
     const usuario = document.getElementById("usuario");
     const senha = document.getElementById("senha");
     const erro = document.getElementById("erro");
 
     if (!usuario || !senha) return;
 
-    if (
-        usuario.value === "admin" &&
-        senha.value === "123456"
-    ) {
+    const email = usuario.value.trim();
+    const password = senha.value;
 
-        localStorage.setItem("logado", "sim");
+    if (!email || !password) {
+        if (erro) {
+            erro.innerText = "Digite seu e-mail e sua senha.";
+        }
+        return;
+    }
+
+    if (!bancoDisponivel()) {
+        if (erro) {
+            erro.innerText = "Banco de dados não conectado.";
+        }
+        console.error("Supabase não disponível.");
+        return;
+    }
+
+    try {
+        if (erro) {
+            erro.innerText = "Entrando...";
+        }
+
+        const { data, error } =
+            await window.supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+        if (error) {
+            console.error("Erro no login:", error);
+
+            if (erro) {
+                erro.innerText = "E-mail ou senha incorretos.";
+            }
+
+            return;
+        }
+
+        if (!data || !data.session) {
+            if (erro) {
+                erro.innerText =
+                    "Não foi possível iniciar a sessão.";
+            }
+            return;
+        }
+
+        console.log("LOGIN REALIZADO COM SUCESSO!");
 
         window.location.href = "painel.html";
 
-    } else {
+    } catch (error) {
+        console.error("Erro inesperado no login:", error);
 
         if (erro) {
-            erro.innerText = "Usuário ou senha incorretos.";
+            erro.innerText = "Erro ao entrar no painel.";
         }
+    }
+}
 
+
+// ==========================================
+// VERIFICAR LOGIN
+// ==========================================
+
+async function verificarLogin() {
+
+    if (!bancoDisponivel()) {
+        console.error("Supabase não está disponível.");
+        return false;
     }
 
+    try {
+
+        const { data, error } =
+            await window.supabaseClient.auth.getSession();
+
+        if (error) {
+            console.error(
+                "Erro ao verificar sessão:",
+                error
+            );
+
+            return false;
+        }
+
+        if (!data || !data.session) {
+
+            console.log("Usuário não está logado.");
+
+            window.location.href = "index.html";
+
+            return false;
+        }
+
+        console.log(
+            "Usuário autenticado:",
+            data.session.user.email
+        );
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao verificar login:",
+            error
+        );
+
+        return false;
+    }
 }
 
 
@@ -39,713 +146,130 @@ function entrar() {
 // SAIR
 // ==========================================
 
-function sair() {
+async function sair() {
 
-    localStorage.removeItem("logado");
+    if (bancoDisponivel()) {
+
+        try {
+
+            await window.supabaseClient.auth.signOut();
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao sair:",
+                error
+            );
+        }
+    }
+
+    localStorage.clear();
 
     window.location.href = "index.html";
-
 }
 
 
 // ==========================================
-// INÍCIO
+// NAVEGAÇÃO
 // ==========================================
 
 function mostrarInicio() {
-
     window.location.href = "painel.html";
-
 }
-
-
-// ==========================================
-// MEUS SITES
-// ==========================================
 
 function mostrarSitesMenu() {
-
     window.location.href = "painel.html";
-
 }
-
-
-// ==========================================
-// FINANCEIRO
-// ==========================================
 
 function abrirFinanceiro() {
-
     window.location.href = "financeiro.html";
-
 }
 
-
-// ==========================================
-// NOVO SITE
-// ==========================================
+function abrirClientes() {
+    window.location.href = "clientes.html";
+}
 
 function novoSite() {
 
     localStorage.removeItem("siteEditando");
 
     window.location.href = "novo-site.html";
-
 }
 
+function novoCliente() {
 
-// ==========================================
-// VOLTAR
-// ==========================================
+    localStorage.removeItem("clienteEditandoId");
+
+    window.location.href = "novo-cliente.html";
+}
+
+function novoPagamento() {
+
+    localStorage.removeItem("pagamentoEditando");
+    localStorage.removeItem("clienteParaPagamento");
+
+    window.location.href = "novo-pagamento.html";
+}
 
 function voltar() {
 
     localStorage.removeItem("siteEditando");
+    localStorage.removeItem("clienteEditandoId");
+    localStorage.removeItem("pagamentoEditando");
 
     window.location.href = "painel.html";
-
 }
 
 
 // ==========================================
-// CARREGAR CLIENTES NO CADASTRO DE SITE
+// CLIENTES - SUPABASE
 // ==========================================
 
-function carregarClientesNoSite() {
+async function carregarClientesDoBanco() {
 
-    const campoCliente =
-        document.getElementById("clienteDoSite");
+    if (!bancoDisponivel()) {
 
-    if (!campoCliente) return;
-
-    const clientes =
-        JSON.parse(localStorage.getItem("clientes")) || [];
-
-    campoCliente.innerHTML = "";
-
-    const opcaoInicial =
-        document.createElement("option");
-
-    opcaoInicial.value = "";
-    opcaoInicial.textContent = "Selecione o cliente";
-
-    campoCliente.appendChild(opcaoInicial);
-
-    clientes.forEach(function(cliente, index) {
-
-        const opcao =
-            document.createElement("option");
-
-        opcao.value = index;
-        opcao.textContent = cliente.empresa;
-
-        campoCliente.appendChild(opcao);
-
-    });
-
-}
-
-
-// ==========================================
-// SALVAR OU ATUALIZAR SITE
-// ==========================================
-
-function salvarOuAtualizar() {
-
-    const campoCliente =
-        document.getElementById("clienteDoSite");
-
-    const campoNomeSite =
-        document.getElementById("nomeSite");
-
-    const campoUrl =
-        document.getElementById("url");
-
-    const campoCategoria =
-        document.getElementById("categoria");
-
-    const campoStatus =
-        document.getElementById("status");
-
-    const campoObservacoes =
-        document.getElementById("observacoes");
-
-    if (!campoCliente || !campoNomeSite || !campoUrl) {
-        return;
-    }
-
-    const clienteIndex =
-        campoCliente.value;
-
-    const nomeSite =
-        campoNomeSite.value.trim();
-
-    const url =
-        campoUrl.value.trim();
-
-    const categoria =
-        campoCategoria
-        ? campoCategoria.value
-        : "";
-
-    const status =
-        campoStatus
-        ? campoStatus.value
-        : "";
-
-    const observacoes =
-        campoObservacoes
-        ? campoObservacoes.value.trim()
-        : "";
-
-    if (
-        clienteIndex === "" ||
-        nomeSite === "" ||
-        url === ""
-    ) {
-
-        alert(
-            "Selecione um cliente e preencha os campos obrigatórios."
+        console.error(
+            "Supabase não está disponível."
         );
 
-        return;
-
+        return [];
     }
 
-    const clientes =
-        JSON.parse(localStorage.getItem("clientes")) || [];
-
-    const cliente =
-        clientes[Number(clienteIndex)];
-
-    if (!cliente) {
-
-        alert("Cliente não encontrado.");
-
-        return;
-
-    }
-
-    let sites =
-        JSON.parse(localStorage.getItem("sites")) || [];
-
-    const index =
-        localStorage.getItem("siteEditando");
-
-    const site = {
-
-        clienteIndex: Number(clienteIndex),
-
-        clienteEmpresa: cliente.empresa,
-
-        empresa: cliente.empresa,
-
-        nomeSite: nomeSite,
-
-        url: url,
-
-        categoria: categoria,
-
-        status: status,
-
-        observacoes: observacoes,
-
-        data: new Date().toLocaleDateString("pt-BR")
-
-    };
-
-    if (index !== null) {
-
-        sites[Number(index)] = site;
-
-        localStorage.removeItem("siteEditando");
-
-        alert("Site atualizado com sucesso!");
-
-    } else {
-
-        sites.push(site);
-
-        alert("Site cadastrado com sucesso!");
-
-    }
-
-    localStorage.setItem(
-        "sites",
-        JSON.stringify(sites)
-    );
-
-    window.location.href = "painel.html";
-
-}
-
-
-// ==========================================
-// MOSTRAR SITES
-// ==========================================
-
-function mostrarSites() {
-
-    const lista =
-        document.getElementById("listaSites");
-
-    if (!lista) return;
-
-    const sites =
-        JSON.parse(localStorage.getItem("sites")) || [];
-
-    lista.innerHTML = "";
-
-    if (sites.length === 0) {
-
-        lista.innerHTML = `
-
-            <div class="site">
-
-                <h2>Nenhum site cadastrado</h2>
-
-                <p>
-                    Clique em "+ NOVO SITE"
-                    para cadastrar seu primeiro site.
-                </p>
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-    sites.forEach(function(site, index) {
-
-        const card =
-            document.createElement("div");
-
-        card.className = "site";
-
-        card.innerHTML = `
-
-            <h2>
-                ${site.empresa || site.clienteEmpresa || "Sem cliente"}
-            </h2>
-
-            <p>
-                <strong>Site:</strong>
-                ${site.nomeSite || ""}
-            </p>
-
-            <p>
-                <strong>Categoria:</strong>
-                ${site.categoria || ""}
-            </p>
-
-            <p>
-                <strong>Status:</strong>
-                ${site.status || ""}
-            </p>
-
-            <p>
-                <strong>Cadastrado:</strong>
-                ${site.data || ""}
-            </p>
-
-            ${
-                site.observacoes
-                ?
-                `
-                <p>
-                    <strong>Observações:</strong>
-                    <br>
-                    ${site.observacoes}
-                </p>
-                `
-                :
-                ""
-            }
-
-            <div class="acoes">
-
-                <a
-                    href="${site.url}"
-                    target="_blank"
-                >
-                    ABRIR SITE
-                </a>
-
-                <button
-                    onclick="editarSite(${index})"
-                >
-                    EDITAR
-                </button>
-
-                <button
-                    onclick="excluirSite(${index})"
-                >
-                    EXCLUIR
-                </button>
-
-            </div>
-
-        `;
-
-        lista.appendChild(card);
-
-    });
-
-}
-
-
-// ==========================================
-// EDITAR SITE
-// ==========================================
-
-function editarSite(index) {
-
-    localStorage.setItem(
-        "siteEditando",
-        index
-    );
-
-    window.location.href = "novo-site.html";
-
-}
-
-
-// ==========================================
-// EXCLUIR SITE
-// ==========================================
-
-function excluirSite(index) {
-
-    let sites =
-        JSON.parse(localStorage.getItem("sites")) || [];
-
-    if (
-        !confirm(
-            "Tem certeza que deseja excluir este site?"
-        )
-    ) {
-        return;
-    }
-
-    sites.splice(index, 1);
-
-    localStorage.setItem(
-        "sites",
-        JSON.stringify(sites)
-    );
-
-    mostrarSites();
-
-    atualizarContadores();
-
-}
-
-
-// ==========================================
-// CARREGAR SITE PARA EDIÇÃO
-// ==========================================
-
-function verificarEdicao() {
-
-    const campoCliente =
-        document.getElementById("clienteDoSite");
-
-    if (!campoCliente) return;
-
-    const index =
-        localStorage.getItem("siteEditando");
-
-    if (index === null) return;
-
-    const sites =
-        JSON.parse(localStorage.getItem("sites")) || [];
-
-    const site =
-        sites[Number(index)];
-
-    if (!site) return;
-
-    if (site.clienteIndex !== undefined) {
-
-        campoCliente.value =
-            site.clienteIndex;
-
-    } else {
-
-        const clientes =
-            JSON.parse(localStorage.getItem("clientes")) || [];
-
-        const clienteEncontrado =
-            clientes.findIndex(function(cliente) {
-
-                return (
-                    cliente.empresa.toLowerCase() ===
-                    (site.empresa || "").toLowerCase()
+    try {
+
+        const { data, error } =
+            await window.supabaseClient
+                .from("clientes")
+                .select("*")
+                .order(
+                    "created_at",
+                    {
+                        ascending: true
+                    }
                 );
 
-            });
+        if (error) {
 
-        if (clienteEncontrado !== -1) {
+            console.error(
+                "Erro ao buscar clientes:",
+                error
+            );
 
-            campoCliente.value =
-                clienteEncontrado;
-
+            return [];
         }
 
-    }
+        return data || [];
 
-    document.getElementById("nomeSite").value =
-        site.nomeSite || "";
+    } catch (error) {
 
-    document.getElementById("url").value =
-        site.url || "";
-
-    document.getElementById("categoria").value =
-        site.categoria || "";
-
-    document.getElementById("status").value =
-        site.status || "";
-
-    document.getElementById("observacoes").value =
-        site.observacoes || "";
-
-    const botoes =
-        document.querySelectorAll("button");
-
-    botoes.forEach(function(botao) {
-
-        if (
-            botao.innerText.includes("SALVAR SITE")
-        ) {
-
-            botao.innerText =
-                "ATUALIZAR SITE";
-
-        }
-
-    });
-
-}
-
-
-// ==========================================
-// CONTADORES DOS SITES
-// ==========================================
-
-function atualizarContadores() {
-
-    const sites =
-        JSON.parse(localStorage.getItem("sites")) || [];
-
-    const total = sites.length;
-
-    const online =
-        sites.filter(function(site) {
-
-            return (
-                site.status &&
-                site.status.includes("ONLINE")
-            );
-
-        }).length;
-
-    const manutencao =
-        sites.filter(function(site) {
-
-            return (
-                site.status &&
-                site.status.includes("MANUTENÇÃO")
-            );
-
-        }).length;
-
-    const offline =
-        sites.filter(function(site) {
-
-            return (
-                site.status &&
-                site.status.includes("OFFLINE")
-            );
-
-        }).length;
-
-    const contadorSites =
-        document.getElementById("contadorSites");
-
-    const contadorOnline =
-        document.getElementById("contadorOnline");
-
-    const contadorManutencao =
-        document.getElementById("contadorManutencao");
-
-    const contadorOffline =
-        document.getElementById("contadorOffline");
-
-    if (contadorSites)
-        contadorSites.innerText = total;
-
-    if (contadorOnline)
-        contadorOnline.innerText = online;
-
-    if (contadorManutencao)
-        contadorManutencao.innerText = manutencao;
-
-    if (contadorOffline)
-        contadorOffline.innerText = offline;
-
-}
-
-
-// ==========================================
-// CLIENTES
-// ==========================================
-
-function abrirClientes() {
-
-    window.location.href = "clientes.html";
-
-}
-
-
-// ==========================================
-// NOVO CLIENTE
-// ==========================================
-
-function novoCliente() {
-
-    localStorage.removeItem("clienteEditando");
-
-    window.location.href = "novo-cliente.html";
-
-}
-
-
-// ==========================================
-// SALVAR CLIENTE
-// ==========================================
-
-function salvarCliente() {
-
-    const campoEmpresa =
-        document.getElementById("clienteEmpresa");
-
-    const campoResponsavel =
-        document.getElementById("clienteResponsavel");
-
-    if (!campoEmpresa || !campoResponsavel) {
-        return;
-    }
-
-    const empresa =
-        campoEmpresa.value.trim();
-
-    const responsavel =
-        campoResponsavel.value.trim();
-
-    const campoTelefone =
-        document.getElementById("clienteTelefone");
-
-    const campoWhatsapp =
-        document.getElementById("clienteWhatsapp");
-
-    const campoEmail =
-        document.getElementById("clienteEmail");
-
-    const campoEndereco =
-        document.getElementById("clienteEndereco");
-
-    const campoObservacoes =
-        document.getElementById("clienteObservacoes");
-
-    const telefone =
-        campoTelefone
-        ? campoTelefone.value.trim()
-        : "";
-
-    const whatsapp =
-        campoWhatsapp
-        ? campoWhatsapp.value.trim()
-        : "";
-
-    const email =
-        campoEmail
-        ? campoEmail.value.trim()
-        : "";
-
-    const endereco =
-        campoEndereco
-        ? campoEndereco.value.trim()
-        : "";
-
-    const observacoes =
-        campoObservacoes
-        ? campoObservacoes.value.trim()
-        : "";
-
-    if (
-        empresa === "" ||
-        responsavel === ""
-    ) {
-
-        alert(
-            "Preencha o nome da empresa e o responsável."
+        console.error(
+            "Erro de conexão:",
+            error
         );
 
-        return;
-
+        return [];
     }
-
-    let clientes =
-        JSON.parse(localStorage.getItem("clientes")) || [];
-
-    const index =
-        localStorage.getItem("clienteEditando");
-
-    const cliente = {
-
-        empresa: empresa,
-
-        responsavel: responsavel,
-
-        telefone: telefone,
-
-        whatsapp: whatsapp,
-
-        email: email,
-
-        endereco: endereco,
-
-        observacoes: observacoes,
-
-        data: new Date().toLocaleDateString("pt-BR")
-
-    };
-
-    if (index !== null) {
-
-        clientes[Number(index)] = cliente;
-
-        localStorage.removeItem("clienteEditando");
-
-        alert("Cliente atualizado com sucesso!");
-
-    } else {
-
-        clientes.push(cliente);
-
-        alert("Cliente cadastrado com sucesso!");
-
-    }
-
-    localStorage.setItem(
-        "clientes",
-        JSON.stringify(clientes)
-    );
-
-    window.location.href = "clientes.html";
-
 }
 
 
@@ -753,179 +277,174 @@ function salvarCliente() {
 // MOSTRAR CLIENTES
 // ==========================================
 
-function mostrarClientes(clientesParaMostrar = null) {
+async function mostrarClientes(
+    clientesParaMostrar = null
+) {
 
     const lista =
         document.getElementById("listaClientes");
 
     if (!lista) return;
 
-    const todosClientes =
-        JSON.parse(localStorage.getItem("clientes")) || [];
+    let clientes = clientesParaMostrar;
 
-    const clientes =
-        clientesParaMostrar !== null
-        ? clientesParaMostrar
-        : todosClientes;
+    if (clientes === null) {
+        clientes =
+            await carregarClientesDoBanco();
+    }
 
     lista.innerHTML = "";
 
-    if (clientes.length === 0) {
+    if (!clientes.length) {
 
         lista.innerHTML = `
-
             <div class="site">
 
-                <h2>Nenhum cliente encontrado</h2>
+                <h2>
+                    Nenhum cliente cadastrado
+                </h2>
 
                 <p>
-                    Cadastre um cliente ou
-                    altere a pesquisa.
+                    Cadastre seu primeiro cliente.
                 </p>
 
             </div>
-
         `;
 
         return;
-
     }
 
     clientes.forEach(function(cliente) {
-
-        const index =
-            todosClientes.indexOf(cliente);
 
         const card =
             document.createElement("div");
 
         card.className = "site";
 
+        const whatsapp =
+            cliente.whatsapp
+                ? cliente.whatsapp.replace(/\D/g, "")
+                : "";
+
         card.innerHTML = `
 
             <h2>
-                ${cliente.empresa}
+                ${cliente.empresa || ""}
             </h2>
 
             <p>
                 <strong>Responsável:</strong>
-                ${cliente.responsavel}
+                ${cliente.responsavel || ""}
             </p>
 
             ${
                 cliente.telefone
-                ?
-                `
-                <p>
-                    <strong>Telefone:</strong>
-                    ${cliente.telefone}
-                </p>
-                `
-                :
-                ""
+                    ? `
+                    <p>
+                        <strong>Telefone:</strong>
+                        ${cliente.telefone}
+                    </p>
+                    `
+                    : ""
             }
 
             ${
                 cliente.whatsapp
-                ?
-                `
-                <p>
-                    <strong>WhatsApp:</strong>
-                    ${cliente.whatsapp}
-                </p>
-                `
-                :
-                ""
+                    ? `
+                    <p>
+                        <strong>WhatsApp:</strong>
+                        ${cliente.whatsapp}
+                    </p>
+                    `
+                    : ""
             }
 
             ${
                 cliente.email
-                ?
-                `
-                <p>
-                    <strong>E-mail:</strong>
-                    ${cliente.email}
-                </p>
-                `
-                :
-                ""
+                    ? `
+                    <p>
+                        <strong>E-mail:</strong>
+                        ${cliente.email}
+                    </p>
+                    `
+                    : ""
             }
 
             ${
                 cliente.endereco
-                ?
-                `
-                <p>
-                    <strong>Endereço:</strong>
-                    ${cliente.endereco}
-                </p>
-                `
-                :
-                ""
+                    ? `
+                    <p>
+                        <strong>Endereço:</strong>
+                        ${cliente.endereco}
+                    </p>
+                    `
+                    : ""
             }
 
-            <p>
-                <strong>Cliente desde:</strong>
-                ${cliente.data || ""}
-            </p>
+            ${
+                cliente.created_at
+                    ? `
+                    <p>
+                        <strong>Cliente desde:</strong>
+                        ${
+                            new Date(
+                                cliente.created_at
+                            ).toLocaleDateString("pt-BR")
+                        }
+                    </p>
+                    `
+                    : ""
+            }
 
             ${
                 cliente.observacoes
-                ?
-                `
-                <p>
-                    <strong>Observações:</strong>
-                    <br>
-                    ${cliente.observacoes}
-                </p>
-                `
-                :
-                ""
+                    ? `
+                    <p>
+                        <strong>Observações:</strong><br>
+                        ${cliente.observacoes}
+                    </p>
+                    `
+                    : ""
             }
 
             <div class="acoes">
 
                 <button
-                    onclick="abrirCliente(${index})"
+                    onclick="abrirCliente('${cliente.id}')"
                 >
                     VER CLIENTE
                 </button>
 
                 ${
-                    cliente.whatsapp
-                    ?
-                    `
-                    <a
-                        href="https://wa.me/55${cliente.whatsapp.replace(/\D/g, '')}"
-                        target="_blank"
-                    >
-                        WHATSAPP
-                    </a>
-                    `
-                    :
-                    ""
+                    whatsapp
+                        ? `
+                        <a
+                            href="https://wa.me/55${whatsapp}"
+                            target="_blank"
+                        >
+                            WHATSAPP
+                        </a>
+                        `
+                        : ""
                 }
 
                 <button
-                    onclick="editarCliente(${index})"
+                    onclick="editarCliente('${cliente.id}')"
                 >
                     EDITAR
                 </button>
 
                 <button
-                    onclick="excluirCliente(${index})"
+                    onclick="excluirCliente('${cliente.id}')"
                 >
                     EXCLUIR
                 </button>
 
             </div>
-
         `;
 
         lista.appendChild(card);
-
     });
-
 }
 
 
@@ -933,7 +452,7 @@ function mostrarClientes(clientesParaMostrar = null) {
 // PESQUISAR CLIENTES
 // ==========================================
 
-function pesquisarClientes() {
+async function pesquisarClientes() {
 
     const campo =
         document.getElementById("pesquisaCliente");
@@ -944,21 +463,19 @@ function pesquisarClientes() {
         campo.value.toLowerCase().trim();
 
     const clientes =
-        JSON.parse(localStorage.getItem("clientes")) || [];
+        await carregarClientesDoBanco();
 
-    if (pesquisa === "") {
+    if (!pesquisa) {
 
         mostrarClientes(clientes);
 
         return;
-
     }
 
     const resultados =
         clientes.filter(function(cliente) {
 
             return (
-
                 (cliente.empresa || "")
                     .toLowerCase()
                     .includes(pesquisa)
@@ -986,13 +503,10 @@ function pesquisarClientes() {
                 (cliente.email || "")
                     .toLowerCase()
                     .includes(pesquisa)
-
             );
-
         });
 
     mostrarClientes(resultados);
-
 }
 
 
@@ -1000,56 +514,417 @@ function pesquisarClientes() {
 // ABRIR CLIENTE
 // ==========================================
 
-function abrirCliente(index) {
+function abrirCliente(id) {
 
     localStorage.setItem(
         "clienteVisualizando",
-        index
+        id
     );
 
-    window.location.href = "cliente.html";
-
+    window.location.href =
+        "cliente.html";
 }
 
 
 // ==========================================
-// MOSTRAR DETALHES DO CLIENTE
+// SALVAR CLIENTE
 // ==========================================
 
-function mostrarDetalhesCliente() {
+async function salvarCliente() {
+
+    const campoEmpresa =
+        document.getElementById(
+            "clienteEmpresa"
+        );
+
+    const campoResponsavel =
+        document.getElementById(
+            "clienteResponsavel"
+        );
+
+    if (
+        !campoEmpresa ||
+        !campoResponsavel
+    ) {
+        return;
+    }
+
+    const empresa =
+        campoEmpresa.value.trim();
+
+    const responsavel =
+        campoResponsavel.value.trim();
+
+    const telefone =
+        document.getElementById(
+            "clienteTelefone"
+        )?.value.trim() || "";
+
+    const whatsapp =
+        document.getElementById(
+            "clienteWhatsapp"
+        )?.value.trim() || "";
+
+    const email =
+        document.getElementById(
+            "clienteEmail"
+        )?.value.trim() || "";
+
+    const endereco =
+        document.getElementById(
+            "clienteEndereco"
+        )?.value.trim() || "";
+
+    const observacoes =
+        document.getElementById(
+            "clienteObservacoes"
+        )?.value.trim() || "";
+
+    if (!empresa || !responsavel) {
+
+        alert(
+            "Preencha o nome da empresa e o responsável."
+        );
+
+        return;
+    }
+
+    if (!bancoDisponivel()) {
+
+        alert(
+            "Supabase não está conectado."
+        );
+
+        return;
+    }
+
+    const clienteEditandoId =
+        localStorage.getItem(
+            "clienteEditandoId"
+        );
+
+    try {
+
+        // ATUALIZAR
+
+        if (clienteEditandoId) {
+
+            const { error } =
+                await window.supabaseClient
+                    .from("clientes")
+                    .update({
+
+                        empresa,
+                        responsavel,
+                        telefone,
+                        whatsapp,
+                        email,
+                        endereco,
+                        observacoes
+
+                    })
+                    .eq(
+                        "id",
+                        clienteEditandoId
+                    );
+
+            if (error) {
+
+                console.error(
+                    "Erro ao atualizar:",
+                    error
+                );
+
+                alert(
+                    "Erro ao atualizar cliente."
+                );
+
+                return;
+            }
+
+            localStorage.removeItem(
+                "clienteEditandoId"
+            );
+
+            alert(
+                "Cliente atualizado com sucesso!"
+            );
+
+            window.location.href =
+                "clientes.html";
+
+            return;
+        }
+
+
+        // NOVO CLIENTE
+
+        const { data, error } =
+            await window.supabaseClient
+                .from("clientes")
+                .insert({
+
+                    empresa,
+                    responsavel,
+                    telefone,
+                    whatsapp,
+                    email,
+                    endereco,
+                    observacoes
+
+                })
+                .select()
+                .single();
+
+        if (error) {
+
+            console.error(
+                "Erro ao cadastrar:",
+                error
+            );
+
+            alert(
+                "Erro ao cadastrar cliente."
+            );
+
+            return;
+        }
+
+        console.log(
+            "Cliente cadastrado:",
+            data
+        );
+
+        alert(
+            "Cliente cadastrado com sucesso!"
+        );
+
+        window.location.href =
+            "clientes.html";
+
+    } catch (error) {
+
+        console.error(
+            "Erro inesperado:",
+            error
+        );
+
+        alert(
+            "Erro ao conectar com o banco."
+        );
+    }
+}
+
+
+// ==========================================
+// EDITAR CLIENTE
+// ==========================================
+
+function editarCliente(clienteId) {
+
+    localStorage.setItem(
+        "clienteEditandoId",
+        clienteId
+    );
+
+    window.location.href =
+        "novo-cliente.html";
+}
+
+
+// ==========================================
+// PREENCHER CLIENTE PARA EDIÇÃO
+// ==========================================
+
+async function verificarEdicaoCliente() {
+
+    const campoEmpresa =
+        document.getElementById(
+            "clienteEmpresa"
+        );
+
+    if (!campoEmpresa) return;
+
+    const clienteId =
+        localStorage.getItem(
+            "clienteEditandoId"
+        );
+
+    if (!clienteId) return;
+
+    const clientes =
+        await carregarClientesDoBanco();
+
+    const cliente =
+        clientes.find(function(item) {
+
+            return String(item.id) ===
+                String(clienteId);
+
+        });
+
+    if (!cliente) {
+
+        alert(
+            "Cliente não encontrado."
+        );
+
+        return;
+    }
+
+    document.getElementById(
+        "clienteEmpresa"
+    ).value =
+        cliente.empresa || "";
+
+    document.getElementById(
+        "clienteResponsavel"
+    ).value =
+        cliente.responsavel || "";
+
+    document.getElementById(
+        "clienteTelefone"
+    ).value =
+        cliente.telefone || "";
+
+    document.getElementById(
+        "clienteWhatsapp"
+    ).value =
+        cliente.whatsapp || "";
+
+    document.getElementById(
+        "clienteEmail"
+    ).value =
+        cliente.email || "";
+
+    document.getElementById(
+        "clienteEndereco"
+    ).value =
+        cliente.endereco || "";
+
+    document.getElementById(
+        "clienteObservacoes"
+    ).value =
+        cliente.observacoes || "";
+}
+
+
+// ==========================================
+// EXCLUIR CLIENTE
+// ==========================================
+
+async function excluirCliente(clienteId) {
+
+    if (
+        !confirm(
+            "Tem certeza que deseja excluir este cliente?"
+        )
+    ) {
+        return;
+    }
+
+    if (!bancoDisponivel()) {
+
+        alert(
+            "Supabase não está conectado."
+        );
+
+        return;
+    }
+
+    try {
+
+        const { error } =
+            await window.supabaseClient
+                .from("clientes")
+                .delete()
+                .eq(
+                    "id",
+                    clienteId
+                );
+
+        if (error) {
+
+            console.error(
+                "Erro ao excluir:",
+                error
+            );
+
+            alert(
+                "Erro ao excluir cliente."
+            );
+
+            return;
+        }
+
+        alert(
+            "Cliente excluído com sucesso!"
+        );
+
+        mostrarClientes();
+
+    } catch (error) {
+
+        console.error(
+            "Erro:",
+            error
+        );
+
+        alert(
+            "Erro ao conectar com o banco."
+        );
+    }
+}
+
+
+// ==========================================
+// DETALHES DO CLIENTE
+// ==========================================
+
+async function mostrarDetalhesCliente() {
 
     const dados =
-        document.getElementById("dadosCliente");
+        document.getElementById(
+            "dadosCliente"
+        );
 
     const listaSites =
-        document.getElementById("sitesDoCliente");
+        document.getElementById(
+            "sitesDoCliente"
+        );
 
-    if (!dados || !listaSites) return;
+    if (
+        !dados ||
+        !listaSites
+    ) {
+        return;
+    }
 
-    const index =
-        localStorage.getItem("clienteVisualizando");
+    const clienteId =
+        localStorage.getItem(
+            "clienteVisualizando"
+        );
 
-    if (index === null) {
+    if (!clienteId) {
 
         dados.innerHTML = `
-
             <h2>Cliente não encontrado</h2>
-
-            <p>
-                Volte para a página de clientes.
-            </p>
-
+            <p>Volte para a página de clientes.</p>
         `;
 
         return;
-
     }
 
     const clientes =
-        JSON.parse(localStorage.getItem("clientes")) || [];
+        await carregarClientesDoBanco();
 
     const cliente =
-        clientes[Number(index)];
+        clientes.find(function(item) {
+
+            return String(item.id) ===
+                String(clienteId);
+
+        });
 
     if (!cliente) {
 
@@ -1058,137 +933,127 @@ function mostrarDetalhesCliente() {
         `;
 
         return;
-
     }
 
     dados.innerHTML = `
 
         <h1>
-            ${cliente.empresa}
+            ${cliente.empresa || ""}
         </h1>
 
         <p>
             <strong>Responsável:</strong>
-            ${cliente.responsavel}
+            ${cliente.responsavel || ""}
         </p>
 
         ${
             cliente.telefone
-            ?
-            `
-            <p>
-                <strong>Telefone:</strong>
-                ${cliente.telefone}
-            </p>
-            `
-            :
-            ""
+                ? `
+                <p>
+                    <strong>Telefone:</strong>
+                    ${cliente.telefone}
+                </p>
+                `
+                : ""
         }
 
         ${
             cliente.whatsapp
-            ?
-            `
-            <p>
-                <strong>WhatsApp:</strong>
-                ${cliente.whatsapp}
-            </p>
-            `
-            :
-            ""
+                ? `
+                <p>
+                    <strong>WhatsApp:</strong>
+                    ${cliente.whatsapp}
+                </p>
+                `
+                : ""
         }
 
         ${
             cliente.email
-            ?
-            `
-            <p>
-                <strong>E-mail:</strong>
-                ${cliente.email}
-            </p>
-            `
-            :
-            ""
+                ? `
+                <p>
+                    <strong>E-mail:</strong>
+                    ${cliente.email}
+                </p>
+                `
+                : ""
         }
 
         ${
             cliente.endereco
-            ?
-            `
-            <p>
-                <strong>Endereço:</strong>
-                ${cliente.endereco}
-            </p>
-            `
-            :
-            ""
+                ? `
+                <p>
+                    <strong>Endereço:</strong>
+                    ${cliente.endereco}
+                </p>
+                `
+                : ""
         }
 
-        <p>
-            <strong>Cliente desde:</strong>
-            ${cliente.data || ""}
-        </p>
+        ${
+            cliente.created_at
+                ? `
+                <p>
+                    <strong>Cliente desde:</strong>
+                    ${
+                        new Date(
+                            cliente.created_at
+                        ).toLocaleDateString(
+                            "pt-BR"
+                        )
+                    }
+                </p>
+                `
+                : ""
+        }
 
         ${
             cliente.observacoes
-            ?
-            `
-            <p>
-                <strong>Observações:</strong>
-                <br>
-                ${cliente.observacoes}
-            </p>
-            `
-            :
-            ""
+                ? `
+                <p>
+                    <strong>Observações:</strong><br>
+                    ${cliente.observacoes}
+                </p>
+                `
+                : ""
         }
 
     `;
 
 
-    // ==========================================
-    // SITES DO CLIENTE
-    // ==========================================
+    // SITES
 
     const sites =
-        JSON.parse(localStorage.getItem("sites")) || [];
-
-    listaSites.innerHTML = "";
+        JSON.parse(
+            localStorage.getItem("sites")
+        ) || [];
 
     const sitesCliente =
         sites.filter(function(site) {
 
-            if (site.clienteIndex !== undefined) {
-
-                return (
-                    Number(site.clienteIndex) ===
-                    Number(index)
-                );
-
-            }
-
-            return (
-                (site.empresa || "")
-                    .toLowerCase()
-                ===
-                (cliente.empresa || "")
-                    .toLowerCase()
+            return String(
+                site.clienteId
+            ) === String(
+                cliente.id
             );
 
         });
 
+    listaSites.innerHTML = "";
 
-    if (sitesCliente.length === 0) {
+    if (!sitesCliente.length) {
 
         listaSites.innerHTML = `
 
             <div class="site">
 
-                <h2>Nenhum site cadastrado</h2>
+                <h2>
+                    Nenhum site cadastrado
+                </h2>
 
                 <p>
-                    Ainda não existe nenhum site
-                    cadastrado para este cliente.
+                    Ainda não existe nenhum
+                    site cadastrado para este cliente.
                 </p>
 
             </div>
@@ -1197,22 +1062,346 @@ function mostrarDetalhesCliente() {
 
     } else {
 
-        sitesCliente.forEach(function(site) {
+        sitesCliente.forEach(
+            function(site) {
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+                card.className = "site";
+
+                card.innerHTML = `
+
+                    <h2>
+                        ${site.nomeSite || ""}
+                    </h2>
+
+                    <p>
+                        <strong>Empresa:</strong>
+                        ${cliente.empresa}
+                    </p>
+
+                    <p>
+                        <strong>Categoria:</strong>
+                        ${site.categoria || ""}
+                    </p>
+
+                    <p>
+                        <strong>Status:</strong>
+                        ${site.status || ""}
+                    </p>
+
+                    <div class="acoes">
+
+                        <a
+                            href="${site.url}"
+                            target="_blank"
+                        >
+                            ABRIR SITE
+                        </a>
+
+                    </div>
+
+                `;
+
+                listaSites.appendChild(
+                    card
+                );
+            }
+        );
+    }
+
+    mostrarFinanceiroDoCliente(
+        cliente
+    );
+}
+
+
+// ==========================================
+// CARREGAR CLIENTES PARA NOVO SITE
+// ==========================================
+
+async function carregarClientesNoSite() {
+
+    const campoCliente =
+        document.getElementById(
+            "clienteDoSite"
+        );
+
+    if (!campoCliente) return;
+
+    const clientes =
+        await carregarClientesDoBanco();
+
+    campoCliente.innerHTML = "";
+
+    const inicial =
+        document.createElement(
+            "option"
+        );
+
+    inicial.value = "";
+
+    inicial.textContent =
+        "Selecione o cliente";
+
+    campoCliente.appendChild(
+        inicial
+    );
+
+    clientes.forEach(
+        function(cliente) {
+
+            const opcao =
+                document.createElement(
+                    "option"
+                );
+
+            opcao.value =
+                cliente.id;
+
+            opcao.textContent =
+                cliente.empresa;
+
+            campoCliente.appendChild(
+                opcao
+            );
+        }
+    );
+}
+
+
+// ==========================================
+// SALVAR SITE
+// ==========================================
+
+async function salvarOuAtualizar() {
+
+    const campoCliente =
+        document.getElementById(
+            "clienteDoSite"
+        );
+
+    const campoNomeSite =
+        document.getElementById(
+            "nomeSite"
+        );
+
+    const campoUrl =
+        document.getElementById(
+            "url"
+        );
+
+    if (
+        !campoCliente ||
+        !campoNomeSite ||
+        !campoUrl
+    ) {
+        return;
+    }
+
+    const clienteId =
+        campoCliente.value;
+
+    const nomeSite =
+        campoNomeSite.value.trim();
+
+    const url =
+        campoUrl.value.trim();
+
+    const categoria =
+        document.getElementById(
+            "categoria"
+        )?.value || "";
+
+    const status =
+        document.getElementById(
+            "status"
+        )?.value || "";
+
+    const observacoes =
+        document.getElementById(
+            "observacoes"
+        )?.value.trim() || "";
+
+    if (
+        !clienteId ||
+        !nomeSite ||
+        !url
+    ) {
+
+        alert(
+            "Selecione um cliente e preencha os campos obrigatórios."
+        );
+
+        return;
+    }
+
+    const clientes =
+        await carregarClientesDoBanco();
+
+    const cliente =
+        clientes.find(function(item) {
+
+            return String(item.id) ===
+                String(clienteId);
+
+        });
+
+    if (!cliente) {
+
+        alert(
+            "Cliente não encontrado."
+        );
+
+        return;
+    }
+
+    let sites =
+        JSON.parse(
+            localStorage.getItem("sites")
+        ) || [];
+
+    const index =
+        localStorage.getItem(
+            "siteEditando"
+        );
+
+    const site = {
+
+        clienteId:
+            cliente.id,
+
+        clienteEmpresa:
+            cliente.empresa,
+
+        empresa:
+            cliente.empresa,
+
+        nomeSite:
+            nomeSite,
+
+        url:
+            url,
+
+        categoria:
+            categoria,
+
+        status:
+            status,
+
+        observacoes:
+            observacoes,
+
+        data:
+            new Date()
+                .toLocaleDateString(
+                    "pt-BR"
+                )
+    };
+
+    if (index !== null) {
+
+        sites[
+            Number(index)
+        ] = site;
+
+        localStorage.removeItem(
+            "siteEditando"
+        );
+
+        alert(
+            "Site atualizado com sucesso!"
+        );
+
+    } else {
+
+        sites.push(site);
+
+        alert(
+            "Site cadastrado com sucesso!"
+        );
+    }
+
+    localStorage.setItem(
+        "sites",
+        JSON.stringify(sites)
+    );
+
+    window.location.href =
+        "painel.html";
+}
+
+
+// ==========================================
+// MOSTRAR SITES
+// ==========================================
+
+function mostrarSites() {
+
+    const lista =
+        document.getElementById(
+            "listaSites"
+        );
+
+    if (!lista) return;
+
+    const sites =
+        JSON.parse(
+            localStorage.getItem(
+                "sites"
+            )
+        ) || [];
+
+    lista.innerHTML = "";
+
+    if (!sites.length) {
+
+        lista.innerHTML = `
+
+            <div class="site">
+
+                <h2>
+                    Nenhum site cadastrado
+                </h2>
+
+                <p>
+                    Clique em "+ NOVO SITE"
+                    para cadastrar seu primeiro site.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+    sites.forEach(
+        function(site, index) {
 
             const card =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             card.className = "site";
 
             card.innerHTML = `
 
                 <h2>
-                    ${site.nomeSite}
+                    ${
+                        site.empresa ||
+                        site.clienteEmpresa ||
+                        "Sem cliente"
+                    }
                 </h2>
 
                 <p>
-                    <strong>Empresa:</strong>
-                    ${site.empresa || cliente.empresa}
+                    <strong>Site:</strong>
+                    ${site.nomeSite || ""}
                 </p>
 
                 <p>
@@ -1225,25 +1414,6 @@ function mostrarDetalhesCliente() {
                     ${site.status || ""}
                 </p>
 
-                <p>
-                    <strong>Cadastrado:</strong>
-                    ${site.data || ""}
-                </p>
-
-                ${
-                    site.observacoes
-                    ?
-                    `
-                    <p>
-                        <strong>Observações:</strong>
-                        <br>
-                        ${site.observacoes}
-                    </p>
-                    `
-                    :
-                    ""
-                }
-
                 <div class="acoes">
 
                     <a
@@ -1253,335 +1423,392 @@ function mostrarDetalhesCliente() {
                         ABRIR SITE
                     </a>
 
-                </div>
-
-            `;
-
-            listaSites.appendChild(card);
-
-        });
-
-    }
-
-
-    // ==========================================
-    // MOSTRAR FINANCEIRO DO CLIENTE
-    // ==========================================
-
-    mostrarFinanceiroDoCliente();
-
-}
-
-
-// ==========================================
-// FINANCEIRO DO CLIENTE
-// ==========================================
-
-function mostrarFinanceiroDoCliente() {
-
-    const lista =
-        document.getElementById("financeiroDoCliente");
-
-    if (!lista) return;
-
-    const index =
-        localStorage.getItem("clienteVisualizando");
-
-    if (index === null) return;
-
-    const clientes =
-        JSON.parse(localStorage.getItem("clientes")) || [];
-
-    const cliente =
-        clientes[Number(index)];
-
-    if (!cliente) return;
-
-    const pagamentos =
-        JSON.parse(
-            localStorage.getItem("financeiro")
-        ) || [];
-
-
-    // ==========================================
-    // FILTRAR PAGAMENTOS
-    // ==========================================
-
-    const pagamentosCliente =
-        pagamentos.filter(function(pagamento) {
-
-            if (
-                pagamento.clienteIndex !== undefined
-            ) {
-
-                return (
-                    Number(pagamento.clienteIndex) ===
-                    Number(index)
-                );
-
-            }
-
-            return (
-                (pagamento.cliente || "")
-                    .toLowerCase()
-                ===
-                (cliente.empresa || "")
-                    .toLowerCase()
-            );
-
-        });
-
-
-    // ==========================================
-    // TOTAIS
-    // ==========================================
-
-    let total = 0;
-    let pago = 0;
-    let pendente = 0;
-    let atrasado = 0;
-
-
-    pagamentosCliente.forEach(function(pagamento) {
-
-        const valor =
-            Number(pagamento.valor) || 0;
-
-        total += valor;
-
-        if (pagamento.status === "Pago") {
-            pago += valor;
-        }
-
-        if (pagamento.status === "Pendente") {
-            pendente += valor;
-        }
-
-        if (pagamento.status === "Atrasado") {
-            atrasado += valor;
-        }
-
-    });
-
-
-    const campoTotal =
-        document.getElementById(
-            "clienteTotalFinanceiro"
-        );
-
-    const campoPago =
-        document.getElementById(
-            "clienteTotalPago"
-        );
-
-    const campoPendente =
-        document.getElementById(
-            "clienteTotalPendente"
-        );
-
-    const campoAtrasado =
-        document.getElementById(
-            "clienteTotalAtrasado"
-        );
-
-
-    if (campoTotal) {
-        campoTotal.innerText =
-            formatarDinheiro(total);
-    }
-
-    if (campoPago) {
-        campoPago.innerText =
-            formatarDinheiro(pago);
-    }
-
-    if (campoPendente) {
-        campoPendente.innerText =
-            formatarDinheiro(pendente);
-    }
-
-    if (campoAtrasado) {
-        campoAtrasado.innerText =
-            formatarDinheiro(atrasado);
-    }
-
-
-    // ==========================================
-    // LIMPAR LISTA
-    // ==========================================
-
-    lista.innerHTML = "";
-
-
-    // ==========================================
-    // NENHUM PAGAMENTO
-    // ==========================================
-
-    if (pagamentosCliente.length === 0) {
-
-        lista.innerHTML = `
-
-            <div class="site">
-
-                <h2>
-                    Nenhum pagamento cadastrado
-                </h2>
-
-                <p>
-                    Este cliente ainda não possui
-                    pagamentos cadastrados.
-                </p>
-
-                <div class="acoes">
+                    <button
+                        onclick="editarSite(${index})"
+                    >
+                        EDITAR
+                    </button>
 
                     <button
-                        onclick="novoPagamentoCliente(${index})"
+                        onclick="excluirSite(${index})"
                     >
-                        + NOVO PAGAMENTO
+                        EXCLUIR
                     </button>
 
                 </div>
 
-            </div>
+            `;
 
-        `;
-
-        return;
-
-    }
-
-
-    // ==========================================
-    // MOSTRAR PAGAMENTOS
-    // ==========================================
-
-    pagamentosCliente.forEach(function(pagamento) {
-
-        const indiceReal =
-            pagamentos.indexOf(pagamento);
-
-        const card =
-            document.createElement("div");
-
-        card.className = "site";
-
-
-        let simbolo = "🟡";
-
-        if (pagamento.status === "Pago") {
-            simbolo = "🟢";
+            lista.appendChild(card);
         }
-
-        if (pagamento.status === "Atrasado") {
-            simbolo = "🔴";
-        }
-
-
-        card.innerHTML = `
-
-            <h2>
-                ${formatarDinheiro(pagamento.valor)}
-            </h2>
-
-            <p>
-                <strong>Vencimento:</strong>
-                ${formatarData(pagamento.vencimento)}
-            </p>
-
-            <p>
-                <strong>Mês:</strong>
-                ${formatarMes(pagamento.mes)}
-            </p>
-
-            <p>
-                <strong>Status:</strong>
-                ${simbolo} ${pagamento.status}
-            </p>
-
-            ${
-                pagamento.observacoes
-                ?
-                `
-                <p>
-                    <strong>Observações:</strong>
-                    <br>
-                    ${pagamento.observacoes}
-                </p>
-                `
-                :
-                ""
-            }
-
-            <p>
-                <strong>Cadastrado em:</strong>
-                ${pagamento.dataCadastro || ""}
-            </p>
-
-            <div class="acoes">
-
-                <button
-                    onclick="editarPagamento(${indiceReal})"
-                >
-                    EDITAR
-                </button>
-
-                <button
-                    onclick="excluirPagamentoCliente(${indiceReal})"
-                >
-                    EXCLUIR
-                </button>
-
-            </div>
-
-        `;
-
-        lista.appendChild(card);
-
-    });
-
-
-    // ==========================================
-    // BOTÃO NOVO PAGAMENTO
-    // ==========================================
-
-    const botaoNovo =
-        document.createElement("div");
-
-    botaoNovo.className = "site";
-
-    botaoNovo.innerHTML = `
-
-        <h2>
-            💰 Novo pagamento
-        </h2>
-
-        <p>
-            Cadastre uma nova cobrança para
-            ${cliente.empresa}.
-        </p>
-
-        <div class="acoes">
-
-            <button
-                onclick="novoPagamentoCliente(${index})"
-            >
-                + NOVO PAGAMENTO
-            </button>
-
-        </div>
-
-    `;
-
-    lista.appendChild(botaoNovo);
-
+    );
 }
 
 
 // ==========================================
-// NOVO PAGAMENTO PELO CLIENTE
+// EDITAR SITE
 // ==========================================
 
-function novoPagamentoCliente(index) {
+function editarSite(index) {
+
+    localStorage.setItem(
+        "siteEditando",
+        index
+    );
+
+    window.location.href =
+        "novo-site.html";
+}
+
+
+// ==========================================
+// EXCLUIR SITE
+// ==========================================
+
+function excluirSite(index) {
+
+    let sites =
+        JSON.parse(
+            localStorage.getItem(
+                "sites"
+            )
+        ) || [];
+
+    if (
+        !confirm(
+            "Tem certeza que deseja excluir este site?"
+        )
+    ) {
+        return;
+    }
+
+    sites.splice(
+        index,
+        1
+    );
+
+    localStorage.setItem(
+        "sites",
+        JSON.stringify(sites)
+    );
+
+    mostrarSites();
+
+    atualizarContadores();
+}
+
+
+// ==========================================
+// EDITAR SITE - PREENCHER
+// ==========================================
+
+function verificarEdicao() {
+
+    const campoCliente =
+        document.getElementById(
+            "clienteDoSite"
+        );
+
+    if (!campoCliente) return;
+
+    const index =
+        localStorage.getItem(
+            "siteEditando"
+        );
+
+    if (index === null) return;
+
+    const sites =
+        JSON.parse(
+            localStorage.getItem(
+                "sites"
+            )
+        ) || [];
+
+    const site =
+        sites[
+            Number(index)
+        ];
+
+    if (!site) return;
+
+    campoCliente.value =
+        site.clienteId || "";
+
+    document.getElementById(
+        "nomeSite"
+    ).value =
+        site.nomeSite || "";
+
+    document.getElementById(
+        "url"
+    ).value =
+        site.url || "";
+
+    document.getElementById(
+        "categoria"
+    ).value =
+        site.categoria || "";
+
+    document.getElementById(
+        "status"
+    ).value =
+        site.status || "";
+
+    document.getElementById(
+        "observacoes"
+    ).value =
+        site.observacoes || "";
+}
+
+
+// ==========================================
+// CONTADORES
+// ==========================================
+
+function atualizarContadores() {
+
+    const sites =
+        JSON.parse(
+            localStorage.getItem(
+                "sites"
+            )
+        ) || [];
+
+    const total =
+        sites.length;
+
+    const online =
+        sites.filter(
+            function(site) {
+
+                return (
+                    site.status &&
+                    site.status.includes(
+                        "ONLINE"
+                    )
+                );
+
+            }
+        ).length;
+
+    const manutencao =
+        sites.filter(
+            function(site) {
+
+                return (
+                    site.status &&
+                    site.status.includes(
+                        "MANUTENÇÃO"
+                    )
+                );
+
+            }
+        ).length;
+
+    const offline =
+        sites.filter(
+            function(site) {
+
+                return (
+                    site.status &&
+                    site.status.includes(
+                        "OFFLINE"
+                    )
+                );
+
+            }
+        ).length;
+
+    const contadorSites =
+        document.getElementById(
+            "contadorSites"
+        );
+
+    const contadorOnline =
+        document.getElementById(
+            "contadorOnline"
+        );
+
+    const contadorManutencao =
+        document.getElementById(
+            "contadorManutencao"
+        );
+
+    const contadorOffline =
+        document.getElementById(
+            "contadorOffline"
+        );
+
+    if (contadorSites) {
+        contadorSites.innerText =
+            total;
+    }
+
+    if (contadorOnline) {
+        contadorOnline.innerText =
+            online;
+    }
+
+    if (contadorManutencao) {
+        contadorManutencao.innerText =
+            manutencao;
+    }
+
+    if (contadorOffline) {
+        contadorOffline.innerText =
+            offline;
+    }
+}
+
+
+// ==========================================
+// FINANCEIRO
+// ==========================================
+
+function formatarDinheiro(valor) {
+
+    return Number(
+        valor || 0
+    ).toLocaleString(
+        "pt-BR",
+        {
+            style: "currency",
+            currency: "BRL"
+        }
+    );
+}
+
+
+function formatarData(data) {
+
+    if (!data) return "";
+
+    const partes =
+        data.split("-");
+
+    if (partes.length !== 3) {
+        return data;
+    }
+
+    return (
+        partes[2] +
+        "/" +
+        partes[1] +
+        "/" +
+        partes[0]
+    );
+}
+
+
+function formatarMes(mes) {
+
+    if (!mes) return "";
+
+    const partes =
+        mes.split("-");
+
+    if (partes.length !== 2) {
+        return mes;
+    }
+
+    const meses = [
+
+        "Janeiro",
+        "Fevereiro",
+        "Março",
+        "Abril",
+        "Maio",
+        "Junho",
+        "Julho",
+        "Agosto",
+        "Setembro",
+        "Outubro",
+        "Novembro",
+        "Dezembro"
+
+    ];
+
+    const numero =
+        Number(partes[1]);
+
+    if (
+        numero >= 1 &&
+        numero <= 12
+    ) {
+
+        return (
+            meses[numero - 1] +
+            " de " +
+            partes[0]
+        );
+    }
+
+    return mes;
+}
+
+
+// ==========================================
+// CLIENTES PARA PAGAMENTO
+// ==========================================
+
+async function carregarClientesPagamento() {
+
+    const campo =
+        document.getElementById(
+            "clientePagamento"
+        );
+
+    if (!campo) return;
+
+    const clientes =
+        await carregarClientesDoBanco();
+
+    campo.innerHTML = "";
+
+    const inicial =
+        document.createElement(
+            "option"
+        );
+
+    inicial.value = "";
+
+    inicial.textContent =
+        "Selecione o cliente";
+
+    campo.appendChild(
+        inicial
+    );
+
+    clientes.forEach(
+        function(cliente) {
+
+            const opcao =
+                document.createElement(
+                    "option"
+                );
+
+            opcao.value =
+                cliente.id;
+
+            opcao.textContent =
+                cliente.empresa;
+
+            campo.appendChild(
+                opcao
+            );
+        }
+    );
+}
+
+
+// ==========================================
+// NOVO PAGAMENTO DO CLIENTE
+// ==========================================
+
+function novoPagamentoCliente(
+    clienteId
+) {
 
     localStorage.removeItem(
         "pagamentoEditando"
@@ -1589,224 +1816,49 @@ function novoPagamentoCliente(index) {
 
     localStorage.setItem(
         "clienteParaPagamento",
-        index
+        clienteId
     );
 
     window.location.href =
         "novo-pagamento.html";
-
 }
 
 
 // ==========================================
-// EDITAR CLIENTE
+// SALVAR PAGAMENTO
 // ==========================================
 
-function editarCliente(index) {
-
-    localStorage.setItem(
-        "clienteEditando",
-        index
-    );
-
-    window.location.href =
-        "novo-cliente.html";
-
-}
-
-
-// ==========================================
-// EXCLUIR CLIENTE
-// ==========================================
-
-function excluirCliente(index) {
-
-    let clientes =
-        JSON.parse(localStorage.getItem("clientes")) || [];
-
-    if (
-        !confirm(
-            "Tem certeza que deseja excluir este cliente?"
-        )
-    ) {
-        return;
-    }
-
-    clientes.splice(index, 1);
-
-    localStorage.setItem(
-        "clientes",
-        JSON.stringify(clientes)
-    );
-
-    mostrarClientes();
-
-}
-
-
-// ==========================================
-// CARREGAR CLIENTE PARA EDIÇÃO
-// ==========================================
-
-function verificarEdicaoCliente() {
-
-    const campoEmpresa =
-        document.getElementById("clienteEmpresa");
-
-    if (!campoEmpresa) return;
-
-    const index =
-        localStorage.getItem("clienteEditando");
-
-    if (index === null) return;
-
-    const clientes =
-        JSON.parse(localStorage.getItem("clientes")) || [];
-
-    const cliente =
-        clientes[Number(index)];
-
-    if (!cliente) return;
-
-    document.getElementById("clienteEmpresa").value =
-        cliente.empresa || "";
-
-    document.getElementById("clienteResponsavel").value =
-        cliente.responsavel || "";
-
-    document.getElementById("clienteTelefone").value =
-        cliente.telefone || "";
-
-    document.getElementById("clienteWhatsapp").value =
-        cliente.whatsapp || "";
-
-    document.getElementById("clienteEmail").value =
-        cliente.email || "";
-
-    document.getElementById("clienteEndereco").value =
-        cliente.endereco || "";
-
-    document.getElementById("clienteObservacoes").value =
-        cliente.observacoes || "";
-
-    const botoes =
-        document.querySelectorAll("button");
-
-    botoes.forEach(function(botao) {
-
-        if (
-            botao.innerText.includes("SALVAR CLIENTE")
-        ) {
-
-            botao.innerText =
-                "ATUALIZAR CLIENTE";
-
-        }
-
-    });
-
-}
-
-
-// ==========================================
-// FINANCEIRO - FORMATAR VALOR
-// ==========================================
-
-function formatarDinheiro(valor) {
-
-    return Number(valor || 0).toLocaleString(
-        "pt-BR",
-        {
-            style: "currency",
-            currency: "BRL"
-        }
-    );
-
-}
-
-
-// ==========================================
-// FINANCEIRO - CARREGAR CLIENTES
-// ==========================================
-
-function carregarClientesPagamento() {
-
-    const campo =
-        document.getElementById("clientePagamento");
-
-    if (!campo) return;
-
-    const clientes =
-        JSON.parse(localStorage.getItem("clientes")) || [];
-
-    campo.innerHTML = "";
-
-    const inicial =
-        document.createElement("option");
-
-    inicial.value = "";
-    inicial.textContent = "Selecione o cliente";
-
-    campo.appendChild(inicial);
-
-    clientes.forEach(function(cliente, index) {
-
-        const opcao =
-            document.createElement("option");
-
-        opcao.value = index;
-        opcao.textContent = cliente.empresa;
-
-        campo.appendChild(opcao);
-
-    });
-
-}
-
-
-// ==========================================
-// FINANCEIRO - NOVO PAGAMENTO
-// ==========================================
-
-function novoPagamento() {
-
-    localStorage.removeItem(
-        "pagamentoEditando"
-    );
-
-    localStorage.removeItem(
-        "clienteParaPagamento"
-    );
-
-    window.location.href =
-        "novo-pagamento.html";
-
-}
-
-
-// ==========================================
-// FINANCEIRO - SALVAR PAGAMENTO
-// ==========================================
-
-function salvarPagamento() {
+async function salvarPagamento() {
 
     const campoCliente =
-        document.getElementById("clientePagamento");
+        document.getElementById(
+            "clientePagamento"
+        );
 
     const campoValor =
-        document.getElementById("valorPagamento");
+        document.getElementById(
+            "valorPagamento"
+        );
 
     const campoVencimento =
-        document.getElementById("vencimentoPagamento");
+        document.getElementById(
+            "vencimentoPagamento"
+        );
 
     const campoMes =
-        document.getElementById("mesPagamento");
+        document.getElementById(
+            "mesPagamento"
+        );
 
     const campoStatus =
-        document.getElementById("statusPagamento");
+        document.getElementById(
+            "statusPagamento"
+        );
 
     const campoObservacoes =
-        document.getElementById("observacoesPagamento");
+        document.getElementById(
+            "observacoesPagamento"
+        );
 
     if (
         !campoCliente ||
@@ -1818,7 +1870,7 @@ function salvarPagamento() {
         return;
     }
 
-    const clienteIndex =
+    const clienteId =
         campoCliente.value;
 
     const valor =
@@ -1835,15 +1887,15 @@ function salvarPagamento() {
 
     const observacoes =
         campoObservacoes
-        ? campoObservacoes.value.trim()
-        : "";
+            ? campoObservacoes.value.trim()
+            : "";
 
     if (
-        clienteIndex === "" ||
-        valor === "" ||
-        vencimento === "" ||
-        mes === "" ||
-        status === ""
+        !clienteId ||
+        !valor ||
+        !vencimento ||
+        !mes ||
+        !status
     ) {
 
         alert(
@@ -1851,35 +1903,49 @@ function salvarPagamento() {
         );
 
         return;
-
     }
 
     const clientes =
-        JSON.parse(localStorage.getItem("clientes")) || [];
+        await carregarClientesDoBanco();
 
     const cliente =
-        clientes[Number(clienteIndex)];
+        clientes.find(
+            function(item) {
+
+                return String(
+                    item.id
+                ) === String(
+                    clienteId
+                );
+
+            }
+        );
 
     if (!cliente) {
 
-        alert("Cliente não encontrado.");
+        alert(
+            "Cliente não encontrado."
+        );
 
         return;
-
     }
 
     let pagamentos =
         JSON.parse(
-            localStorage.getItem("financeiro")
+            localStorage.getItem(
+                "financeiro"
+            )
         ) || [];
 
     const index =
-        localStorage.getItem("pagamentoEditando");
+        localStorage.getItem(
+            "pagamentoEditando"
+        );
 
     const pagamento = {
 
-        clienteIndex:
-            Number(clienteIndex),
+        clienteId:
+            cliente.id,
 
         cliente:
             cliente.empresa,
@@ -1900,8 +1966,10 @@ function salvarPagamento() {
             observacoes,
 
         dataCadastro:
-            new Date().toLocaleDateString("pt-BR")
-
+            new Date()
+                .toLocaleDateString(
+                    "pt-BR"
+                )
     };
 
     if (index !== null) {
@@ -1927,7 +1995,6 @@ function salvarPagamento() {
         alert(
             "Pagamento cadastrado com sucesso!"
         );
-
     }
 
     localStorage.removeItem(
@@ -1936,29 +2003,34 @@ function salvarPagamento() {
 
     localStorage.setItem(
         "financeiro",
-        JSON.stringify(pagamentos)
+        JSON.stringify(
+            pagamentos
+        )
     );
 
     window.location.href =
         "financeiro.html";
-
 }
 
 
 // ==========================================
-// FINANCEIRO - MOSTRAR PAGAMENTOS
+// MOSTRAR FINANCEIRO
 // ==========================================
 
 function mostrarFinanceiro() {
 
     const lista =
-        document.getElementById("listaFinanceiro");
+        document.getElementById(
+            "listaFinanceiro"
+        );
 
     if (!lista) return;
 
     const pagamentos =
         JSON.parse(
-            localStorage.getItem("financeiro")
+            localStorage.getItem(
+                "financeiro"
+            )
         ) || [];
 
     let totalReceber = 0;
@@ -1966,74 +2038,87 @@ function mostrarFinanceiro() {
     let totalPendente = 0;
     let totalAtrasado = 0;
 
-    pagamentos.forEach(function(pagamento) {
+    pagamentos.forEach(
+        function(pagamento) {
 
-        const valor =
-            Number(pagamento.valor) || 0;
+            const valor =
+                Number(
+                    pagamento.valor
+                ) || 0;
 
-        totalReceber += valor;
+            totalReceber += valor;
 
-        if (pagamento.status === "Pago") {
-            totalRecebido += valor;
+            if (
+                pagamento.status === "Pago"
+            ) {
+                totalRecebido += valor;
+            }
+
+            if (
+                pagamento.status === "Pendente"
+            ) {
+                totalPendente += valor;
+            }
+
+            if (
+                pagamento.status === "Atrasado"
+            ) {
+                totalAtrasado += valor;
+            }
         }
-
-        if (pagamento.status === "Pendente") {
-            totalPendente += valor;
-        }
-
-        if (pagamento.status === "Atrasado") {
-            totalAtrasado += valor;
-        }
-
-    });
-
+    );
 
     const totalReceberCampo =
-        document.getElementById("totalReceber");
+        document.getElementById(
+            "totalReceber"
+        );
 
     const totalRecebidoCampo =
-        document.getElementById("totalRecebido");
+        document.getElementById(
+            "totalRecebido"
+        );
 
     const totalPendenteCampo =
-        document.getElementById("totalPendente");
+        document.getElementById(
+            "totalPendente"
+        );
 
     const totalAtrasadoCampo =
-        document.getElementById("totalAtrasado");
-
+        document.getElementById(
+            "totalAtrasado"
+        );
 
     if (totalReceberCampo) {
-
         totalReceberCampo.innerText =
-            formatarDinheiro(totalReceber);
-
+            formatarDinheiro(
+                totalReceber
+            );
     }
 
     if (totalRecebidoCampo) {
-
         totalRecebidoCampo.innerText =
-            formatarDinheiro(totalRecebido);
-
+            formatarDinheiro(
+                totalRecebido
+            );
     }
 
     if (totalPendenteCampo) {
-
         totalPendenteCampo.innerText =
-            formatarDinheiro(totalPendente);
-
+            formatarDinheiro(
+                totalPendente
+            );
     }
 
     if (totalAtrasadoCampo) {
-
         totalAtrasadoCampo.innerText =
-            formatarDinheiro(totalAtrasado);
-
+            formatarDinheiro(
+                totalAtrasado
+            );
     }
-
 
     lista.innerHTML = "";
 
-
-    if (pagamentos.length === 0) {
+    if (!pagamentos.length) {
 
         lista.innerHTML = `
 
@@ -2045,7 +2130,7 @@ function mostrarFinanceiro() {
 
                 <p>
                     Clique em "+ NOVO PAGAMENTO"
-                    para cadastrar um pagamento.
+                    para cadastrar.
                 </p>
 
             </div>
@@ -2053,173 +2138,338 @@ function mostrarFinanceiro() {
         `;
 
         return;
-
     }
 
+    pagamentos.forEach(
+        function(pagamento, index) {
 
-    pagamentos.forEach(function(pagamento, index) {
+            const card =
+                document.createElement(
+                    "div"
+                );
 
-        const card =
-            document.createElement("div");
+            card.className =
+                "site";
 
-        card.className = "site";
+            let simbolo =
+                "🟡";
 
-
-        let simbolo = "🟡";
-
-        if (pagamento.status === "Pago") {
-            simbolo = "🟢";
-        }
-
-        if (pagamento.status === "Atrasado") {
-            simbolo = "🔴";
-        }
-
-
-        card.innerHTML = `
-
-            <h2>
-                ${pagamento.cliente}
-            </h2>
-
-            <p>
-                <strong>Valor:</strong>
-                ${formatarDinheiro(pagamento.valor)}
-            </p>
-
-            <p>
-                <strong>Vencimento:</strong>
-                ${formatarData(pagamento.vencimento)}
-            </p>
-
-            <p>
-                <strong>Mês:</strong>
-                ${formatarMes(pagamento.mes)}
-            </p>
-
-            <p>
-                <strong>Status:</strong>
-                ${simbolo} ${pagamento.status}
-            </p>
-
-            ${
-                pagamento.observacoes
-                ?
-                `
-                <p>
-                    <strong>Observações:</strong>
-                    <br>
-                    ${pagamento.observacoes}
-                </p>
-                `
-                :
-                ""
+            if (
+                pagamento.status === "Pago"
+            ) {
+                simbolo = "🟢";
             }
 
-            <div class="acoes">
+            if (
+                pagamento.status === "Atrasado"
+            ) {
+                simbolo = "🔴";
+            }
 
-                <button
-                    onclick="editarPagamento(${index})"
-                >
-                    EDITAR
-                </button>
+            card.innerHTML = `
 
-                <button
-                    onclick="excluirPagamento(${index})"
-                >
-                    EXCLUIR
-                </button>
+                <h2>
+                    ${pagamento.cliente || ""}
+                </h2>
+
+                <p>
+                    <strong>Valor:</strong>
+                    ${
+                        formatarDinheiro(
+                            pagamento.valor
+                        )
+                    }
+                </p>
+
+                <p>
+                    <strong>Vencimento:</strong>
+                    ${
+                        formatarData(
+                            pagamento.vencimento
+                        )
+                    }
+                </p>
+
+                <p>
+                    <strong>Mês:</strong>
+                    ${
+                        formatarMes(
+                            pagamento.mes
+                        )
+                    }
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+                    ${simbolo}
+                    ${pagamento.status || ""}
+                </p>
+
+                <div class="acoes">
+
+                    <button
+                        onclick="editarPagamento(${index})"
+                    >
+                        EDITAR
+                    </button>
+
+                    <button
+                        onclick="excluirPagamento(${index})"
+                    >
+                        EXCLUIR
+                    </button>
+
+                </div>
+
+            `;
+
+            lista.appendChild(
+                card
+            );
+        }
+    );
+}
+
+
+// ==========================================
+// FINANCEIRO DO CLIENTE
+// ==========================================
+
+function mostrarFinanceiroDoCliente(
+    cliente
+) {
+
+    const lista =
+        document.getElementById(
+            "financeiroDoCliente"
+        );
+
+    if (
+        !lista ||
+        !cliente
+    ) {
+        return;
+    }
+
+    const pagamentos =
+        JSON.parse(
+            localStorage.getItem(
+                "financeiro"
+            )
+        ) || [];
+
+    const pagamentosCliente =
+        pagamentos.filter(
+            function(pagamento) {
+
+                return String(
+                    pagamento.clienteId
+                ) === String(
+                    cliente.id
+                );
+
+            }
+        );
+
+    let total = 0;
+    let pago = 0;
+    let pendente = 0;
+    let atrasado = 0;
+
+    pagamentosCliente.forEach(
+        function(pagamento) {
+
+            const valor =
+                Number(
+                    pagamento.valor
+                ) || 0;
+
+            total += valor;
+
+            if (
+                pagamento.status === "Pago"
+            ) {
+                pago += valor;
+            }
+
+            if (
+                pagamento.status === "Pendente"
+            ) {
+                pendente += valor;
+            }
+
+            if (
+                pagamento.status === "Atrasado"
+            ) {
+                atrasado += valor;
+            }
+        }
+    );
+
+    document.getElementById(
+        "clienteTotalFinanceiro"
+    )?.replaceChildren(
+        formatarDinheiro(total)
+    );
+
+    document.getElementById(
+        "clienteTotalPago"
+    )?.replaceChildren(
+        formatarDinheiro(pago)
+    );
+
+    document.getElementById(
+        "clienteTotalPendente"
+    )?.replaceChildren(
+        formatarDinheiro(pendente)
+    );
+
+    document.getElementById(
+        "clienteTotalAtrasado"
+    )?.replaceChildren(
+        formatarDinheiro(atrasado)
+    );
+
+    lista.innerHTML = "";
+
+    if (!pagamentosCliente.length) {
+
+        lista.innerHTML = `
+
+            <div class="site">
+
+                <h2>
+                    Nenhum pagamento cadastrado
+                </h2>
+
+                <p>
+                    Este cliente ainda não possui pagamentos.
+                </p>
+
+                <div class="acoes">
+
+                    <button
+                        onclick="novoPagamentoCliente('${cliente.id}')"
+                    >
+                        + NOVO PAGAMENTO
+                    </button>
+
+                </div>
 
             </div>
 
         `;
 
-        lista.appendChild(card);
-
-    });
-
-}
-
-
-// ==========================================
-// FINANCEIRO - FORMATAR DATA
-// ==========================================
-
-function formatarData(data) {
-
-    if (!data) return "";
-
-    const partes =
-        data.split("-");
-
-    if (partes.length !== 3) {
-        return data;
+        return;
     }
 
-    return (
-        partes[2] +
-        "/" +
-        partes[1] +
-        "/" +
-        partes[0]
+    pagamentosCliente.forEach(
+        function(pagamento) {
+
+            const indiceReal =
+                pagamentos.indexOf(
+                    pagamento
+                );
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+            card.className =
+                "site";
+
+            card.innerHTML = `
+
+                <h2>
+                    ${
+                        formatarDinheiro(
+                            pagamento.valor
+                        )
+                    }
+                </h2>
+
+                <p>
+                    <strong>Vencimento:</strong>
+                    ${
+                        formatarData(
+                            pagamento.vencimento
+                        )
+                    }
+                </p>
+
+                <p>
+                    <strong>Mês:</strong>
+                    ${
+                        formatarMes(
+                            pagamento.mes
+                        )
+                    }
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+                    ${pagamento.status || ""}
+                </p>
+
+                <div class="acoes">
+
+                    <button
+                        onclick="editarPagamento(${indiceReal})"
+                    >
+                        EDITAR
+                    </button>
+
+                    <button
+                        onclick="excluirPagamentoCliente(${indiceReal})"
+                    >
+                        EXCLUIR
+                    </button>
+
+                </div>
+
+            `;
+
+            lista.appendChild(
+                card
+            );
+        }
     );
 
-}
-
-
-// ==========================================
-// FINANCEIRO - FORMATAR MÊS
-// ==========================================
-
-function formatarMes(mes) {
-
-    if (!mes) return "";
-
-    const partes =
-        mes.split("-");
-
-    if (partes.length !== 2) {
-        return mes;
-    }
-
-    const meses = [
-        "Janeiro",
-        "Fevereiro",
-        "Março",
-        "Abril",
-        "Maio",
-        "Junho",
-        "Julho",
-        "Agosto",
-        "Setembro",
-        "Outubro",
-        "Novembro",
-        "Dezembro"
-    ];
-
-    const numero =
-        Number(partes[1]);
-
-    if (
-        numero >= 1 &&
-        numero <= 12
-    ) {
-
-        return (
-            meses[numero - 1] +
-            " de " +
-            partes[0]
+    const novo =
+        document.createElement(
+            "div"
         );
 
-    }
+    novo.className =
+        "site";
 
-    return mes;
+    novo.innerHTML = `
 
+        <h2>
+            💰 Novo pagamento
+        </h2>
+
+        <div class="acoes">
+
+            <button
+                onclick="novoPagamentoCliente('${cliente.id}')"
+            >
+                + NOVO PAGAMENTO
+            </button>
+
+        </div>
+
+    `;
+
+    lista.appendChild(
+        novo
+    );
 }
 
 
 // ==========================================
-// FINANCEIRO - EDITAR PAGAMENTO
+// EDITAR PAGAMENTO
 // ==========================================
 
 function editarPagamento(index) {
@@ -2231,19 +2481,20 @@ function editarPagamento(index) {
 
     window.location.href =
         "novo-pagamento.html";
-
 }
 
 
 // ==========================================
-// FINANCEIRO - EXCLUIR PAGAMENTO
+// EXCLUIR PAGAMENTO
 // ==========================================
 
 function excluirPagamento(index) {
 
     let pagamentos =
         JSON.parse(
-            localStorage.getItem("financeiro")
+            localStorage.getItem(
+                "financeiro"
+            )
         ) || [];
 
     if (
@@ -2251,9 +2502,7 @@ function excluirPagamento(index) {
             "Tem certeza que deseja excluir este pagamento?"
         )
     ) {
-
         return;
-
     }
 
     pagamentos.splice(
@@ -2263,23 +2512,26 @@ function excluirPagamento(index) {
 
     localStorage.setItem(
         "financeiro",
-        JSON.stringify(pagamentos)
+        JSON.stringify(
+            pagamentos
+        )
     );
 
     mostrarFinanceiro();
-
 }
 
 
 // ==========================================
-// FINANCEIRO - EXCLUIR PAGAMENTO DO CLIENTE
+// EXCLUIR PAGAMENTO DO CLIENTE
 // ==========================================
 
 function excluirPagamentoCliente(index) {
 
     let pagamentos =
         JSON.parse(
-            localStorage.getItem("financeiro")
+            localStorage.getItem(
+                "financeiro"
+            )
         ) || [];
 
     if (
@@ -2287,9 +2539,7 @@ function excluirPagamentoCliente(index) {
             "Tem certeza que deseja excluir este pagamento?"
         )
     ) {
-
         return;
-
     }
 
     pagamentos.splice(
@@ -2299,22 +2549,25 @@ function excluirPagamentoCliente(index) {
 
     localStorage.setItem(
         "financeiro",
-        JSON.stringify(pagamentos)
+        JSON.stringify(
+            pagamentos
+        )
     );
 
-    mostrarFinanceiroDoCliente();
-
+    mostrarDetalhesCliente();
 }
 
 
 // ==========================================
-// FINANCEIRO - CARREGAR PAGAMENTO PARA EDIÇÃO
+// EDITAR PAGAMENTO - PREENCHER
 // ==========================================
 
 function verificarEdicaoPagamento() {
 
     const campoCliente =
-        document.getElementById("clientePagamento");
+        document.getElementById(
+            "clientePagamento"
+        );
 
     if (!campoCliente) return;
 
@@ -2327,127 +2580,154 @@ function verificarEdicaoPagamento() {
 
         const pagamentos =
             JSON.parse(
-                localStorage.getItem("financeiro")
+                localStorage.getItem(
+                    "financeiro"
+                )
             ) || [];
 
         const pagamento =
-            pagamentos[Number(index)];
+            pagamentos[
+                Number(index)
+            ];
 
         if (!pagamento) return;
 
-
         campoCliente.value =
-            pagamento.clienteIndex;
-
+            pagamento.clienteId || "";
 
         document.getElementById(
             "valorPagamento"
         ).value =
             pagamento.valor || "";
 
-
         document.getElementById(
             "vencimentoPagamento"
         ).value =
             pagamento.vencimento || "";
-
 
         document.getElementById(
             "mesPagamento"
         ).value =
             pagamento.mes || "";
 
-
         document.getElementById(
             "statusPagamento"
         ).value =
             pagamento.status || "Pendente";
 
-
-        const campoObservacoes =
-            document.getElementById(
-                "observacoesPagamento"
-            );
-
-        if (campoObservacoes) {
-
-            campoObservacoes.value =
-                pagamento.observacoes || "";
-
-        }
-
-
-        const botoes =
-            document.querySelectorAll("button");
-
-        botoes.forEach(function(botao) {
-
-            if (
-                botao.innerText.includes(
-                    "SALVAR PAGAMENTO"
-                )
-            ) {
-
-                botao.innerText =
-                    "ATUALIZAR PAGAMENTO";
-
-            }
-
-        });
+        document.getElementById(
+            "observacoesPagamento"
+        ).value =
+            pagamento.observacoes || "";
 
         return;
-
     }
-
-
-    // ==========================================
-    // SE VEIO DA FICHA DO CLIENTE
-    // ==========================================
 
     const clienteParaPagamento =
         localStorage.getItem(
             "clienteParaPagamento"
         );
 
-    if (
-        clienteParaPagamento !== null
-    ) {
+    if (clienteParaPagamento) {
 
         campoCliente.value =
             clienteParaPagamento;
-
     }
-
 }
 
 
 // ==========================================
-// INICIAR SISTEMA
+// INICIALIZAÇÃO
 // ==========================================
 
 document.addEventListener(
     "DOMContentLoaded",
-    function() {
+    async function() {
 
-        carregarClientesNoSite();
+        console.log(
+            "=========================================="
+        );
 
-        carregarClientesPagamento();
+        console.log(
+            "MEU PAINEL INICIADO"
+        );
+
+        console.log(
+            "Supabase disponível:",
+            bancoDisponivel()
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+
+        // ======================================
+        // PÁGINA DE LOGIN
+        // ======================================
+
+        const campoUsuario =
+            document.getElementById(
+                "usuario"
+            );
+
+        const campoSenha =
+            document.getElementById(
+                "senha"
+            );
+
+        if (
+            campoUsuario &&
+            campoSenha
+        ) {
+
+            console.log(
+                "Página de login carregada."
+            );
+
+            return;
+        }
+
+
+        // ======================================
+        // OUTRAS PÁGINAS
+        // ======================================
+
+        const logado =
+            await verificarLogin();
+
+        if (!logado) {
+            return;
+        }
+
+
+        // ======================================
+        // CARREGAR SISTEMA
+        // ======================================
+
+        await carregarClientesNoSite();
+
+        await carregarClientesPagamento();
+
+        await mostrarClientes();
+
+        await mostrarDetalhesCliente();
 
         mostrarSites();
 
-        mostrarClientes();
-
-        mostrarDetalhesCliente();
+        mostrarFinanceiro();
 
         atualizarContadores();
 
         verificarEdicao();
 
-        verificarEdicaoCliente();
+        await verificarEdicaoCliente();
 
         verificarEdicaoPagamento();
 
-        mostrarFinanceiro();
 
+        console.log(
+            "PAINEL CARREGADO COM USUÁRIO AUTENTICADO."
+        );
     }
 );
