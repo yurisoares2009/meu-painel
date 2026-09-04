@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes - Meu Painel</title>
+
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body class="painel-body">
+
+    <aside class="menu">
+
+        <div class="logo">
+            <h2>MEU PAINEL</h2>
+            <span>Gestão de Sites</span>
+        </div>
+
+        <nav>
+
+            <button onclick="mostrarInicio()">
+                🏠 Início
+            </button>
+
+            <button onclick="mostrarSitesMenu()">
+                🌐 Meus Sites
+            </button>
+
+            <button onclick="abrirClientes()">
+                👥 Clientes
+            </button>
+
+            <button onclick="abrirFinanceiro()">
+                💰 Financeiro
+            </button>
+
+            <button>
+                ⚙️ Configurações
+            </button>
+
+        </nav>
+
+        <div class="menu-final">
+
+            <button
+                class="botao-sair"
+                onclick="sair()"
+            >
+                🚪 Sair
+            </button>
+
+        </div>
+
+    </aside>
+
+    <section class="conteudo">
+
+        <header class="topo">
+
+            <div>
+
+                <h1>
+                    Clientes
+                </h1>
+
+                <p>
+                    Gerencie todas as empresas cadastradas.
+                </p>
+
+            </div>
+
+            <button
+                class="botao-novo"
+                onclick="novoCliente()"
+            >
+                + NOVO CLIENTE
+            </button>
+
+        </header>
+
+        <div class="formulario">
+
+            <label for="pesquisaCliente">
+                🔎 Pesquisar cliente
+            </label>
+
+            <input
+                type="text"
+                id="pesquisaCliente"
+                placeholder="Digite empresa, responsável, telefone ou e-mail..."
+                oninput="pesquisarClientes()"
+            >
+
+        </div>
+
+        <div
+            class="sites"
+            id="listaClientes"
+        ></div>
+
+    </section>
+
+
+    <!-- SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- CONFIGURAÇÃO DO SUPABASE -->
+    <script src="./supabase-config.js"></script>
+
+    <!-- SISTEMA -->
+    <script src="./script.js"></script>
+
+</body>
+
+</html>
